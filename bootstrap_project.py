@@ -1,64 +1,80 @@
 # /path/to/your/roo-project-template/bootstrap_project.py
-import shutil
+import subprocess
+import sys
 from pathlib import Path
 
-# --- КОНФИГУРАЦИЯ ШАБЛОНА ---
-# Определяем, где находится сам шаблон (относительно этого скрипта)
-TEMPLATE_ROOT = Path(__file__).parent.resolve()
+# --- КОНФИГУРАЦИЯ ---
+# Ожидаемые директории, которые должны прийти из шаблона GitHub
+EXPECTED_DIRS = [".roo/rules", "scripts/development"]
 
-# --- НОВОЕ: "Белый список" директорий для копирования ---
-# Эти папки будут скопированы из шаблона в новый проект целиком.
-DIRECTORIES_TO_COPY = [
-    ".roo",
-    "scripts",
-]
+def run_command(command, cwd):
+    """Выполняет команду в терминале и выводит результат."""
+    print(f"\n> Запуск команды: {' '.join(command)}")
+    result = subprocess.run(command, cwd=cwd, capture_output=True, text=True, shell=True)
+    if result.returncode != 0:
+        print(f"❌ Ошибка выполнения:")
+        print(result.stdout)
+        print(result.stderr)
+        sys.exit(1)
+    print(result.stdout)
+    print("✅ Успешно.")
+    return result
 
-# Эти папки будут просто созданы пустыми
-DIRECTORIES_TO_CREATE = [
-    "pages",
-    "journals",
-    "assets",
-    "logseq",
-]
-
-def bootstrap_project(target_root: Path):
+def bootstrap_project():
     """
-    Создает структуру папок и рекурсивно копирует эталонные директории
-    из репозитория-шаблона в целевой проект.
+    Выполняет полную инициализацию проекта ПОСЛЕ его создания из шаблона GitHub.
     """
-    print(f"Инициализация структуры проекта в: {target_root}\n")
+    project_root = Path.cwd()
+    print(f"Инициализация проекта в: {project_root}\n")
 
-    # --- Шаг 1: Копирование директорий с файлами ---
-    print("Копирование эталонных директорий...")
-    for dir_name in DIRECTORIES_TO_COPY:
-        source_dir = TEMPLATE_ROOT / dir_name
-        target_dir = target_root / dir_name
+    # --- Шаг 1: Проверка, что мы в правильном месте ---
+    print("--- Шаг 1: Проверка структуры проекта ---")
+    all_ok = True
+    for dir_path in EXPECTED_DIRS:
+        if not (project_root / dir_path).is_dir():
+            print(f"❌ Ошибка: Директория '{dir_path}' не найдена. Убедитесь, что репозиторий создан из шаблона.")
+            all_ok = False
+    if not all_ok:
+        sys.exit(1)
+    print("✅ Структура шаблона корректна.")
 
-        if source_dir.is_dir():
-            try:
-                shutil.copytree(source_dir, target_dir)
-                print(f"✅ Директория '{dir_name}' успешно скопирована.")
-            except FileExistsError:
-                print(f"⚠️  Директория '{dir_name}' уже существует. Пропускаю.")
-            except Exception as e:
-                print(f"❌ Ошибка при копировании '{dir_name}': {e}")
+    # --- Шаг 2: Инициализация Python-окружения через uv ---
+    print("\n--- Шаг 2: Инициализация Python и uv ---")
+    run_command(["uv", "init", "--quiet"], cwd=project_root)
+    run_command(["uv", "venv"], cwd=project_root)
+    # Здесь можно добавить установку базовых зависимостей, если нужно
+    # run_command(["uv", "pip", "install", "pytest"], cwd=project_root)
+    
+    # --- Шаг 3: Создание символических ссылок для правил ---
+    print("\n--- Шаг 3: Создание символических ссылок для Logseq ---")
+    # Для Windows лучше использовать PowerShell
+    if sys.platform == "win32":
+        ps_script_path = project_root / "scripts" / "development" / "create_logseq_links.ps1"
+        if ps_script_path.exists():
+             run_command(["powershell", "-ExecutionPolicy", "Bypass", "-File", str(ps_script_path)], cwd=project_root)
         else:
-            print(f"⚠️  Предупреждение: Исходная директория не найдена: {source_dir}")
+            print("⚠️  Предупреждение: Скрипт для создания симлинков не найден.")
+    # Для Linux/macOS можно использовать python
+    else:
+        # Здесь может быть вызов python-скрипта для symlink
+        pass
 
-    # --- Шаг 2: Создание пустых директорий ---
-    print("\nСоздание пустых директорий для Logseq...")
-    for dir_name in DIRECTORIES_TO_CREATE:
-        target_dir = target_root / dir_name
-        try:
-            target_dir.mkdir(parents=True, exist_ok=True)
-            print(f"✅ Создана/проверена директория: {dir_name}")
-        except Exception as e:
-            print(f"❌ Ошибка при создании '{dir_name}': {e}")
+    # --- Шаг 4: Генерация config.edn для Logseq ---
+    print("\n--- Шаг 4: Генерация config.edn для чистоты графа ---")
+    config_script = project_root / "scripts" / "development" / "generate_logseq_config.py"
+    if config_script.exists():
+        run_command(["uv", "run", "python", str(config_script)], cwd=project_root)
+    else:
+        print("⚠️  Предупреждение: Скрипт генерации config.edn не найден.")
 
-    print("\n🎉 Инициализация проекта успешно завершена!")
-    print("Не забудьте запустить `uv run python scripts/development/generate_logseq_config.py` для настройки графа.")
+    print("\n🎉 Проект успешно инициализирован и готов к работе!")
 
 if __name__ == "__main__":
-    # Скрипт будет запущен в директории нового проекта
-    new_project_path = Path.cwd()
-    bootstrap_project(new_project_path)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--init', action='store_true', help='Run full project initialization.')
+    args = parser.parse_args()
+
+    if args.init:
+        bootstrap_project()
+    else:
+        print("Пожалуйста, используйте флаг --init для запуска полной инициализации проекта.")
