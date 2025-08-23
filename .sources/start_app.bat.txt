@@ -1,0 +1,53 @@
+@echo off
+setlocal EnableExtensions DisableDelayedExpansion
+chcp 65001 > nul
+echo.
+echo [ROCKET] File Combiner App - Unified Startup
+echo --------------------------------------------------
+echo.
+
+REM Change to project directory
+cd /d "%~dp0..\.."
+
+echo [SETUP] Checking backend environment...
+cd backend
+if not exist ".venv" (
+    echo [SETUP] Creating virtual environment for backend...
+    uv venv
+)
+
+echo [SETUP] Installing backend dependencies...
+uv sync
+cd ..
+
+echo [SETUP] Checking frontend environment...
+cd frontend
+if not exist ".venv" (
+    echo [SETUP] Creating virtual environment for frontend...
+    uv venv
+)
+
+echo [SETUP] Installing frontend dependencies...
+uv sync
+cd ..
+
+echo [START] Starting File Combiner App...
+echo.
+
+echo [INFO] Starting backend server in background...
+cd backend
+start "File Combiner Backend" /min cmd /k "cd /d %cd% && uv run uvicorn src.backend.main:app --reload --host 0.0.0.0 --port 8000"
+cd ..
+
+echo [INFO] Waiting for backend to start...
+timeout /t 5 /nobreak > nul
+
+echo [INFO] Starting frontend...
+cd frontend
+uv run streamlit run app.py
+cd ..
+
+echo.
+echo [SUCCESS] File Combiner App completed!
+echo.
+pause
