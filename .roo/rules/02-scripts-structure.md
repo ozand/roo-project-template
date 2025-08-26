@@ -2,14 +2,14 @@
 
 1. **Separation of application code and auxiliary scripts**
 
-   * **`scripts/development/`** — keep all engineering and migration scripts (e.g., reorganization, database migrations, bulk fixes) separate from production modules in [[src]].  
-   * **[[src]]** — contains only application code and libraries that will be shipped to production.  
+   * **`scripts/development/`** — keep all engineering and migration scripts (e.g., reorganization, database migrations, bulk fixes) separate from production modules in [[src|src]].  
+   * **[[src|src]]** — contains only application code and libraries that will be shipped to production.  
      This prevents “polluting” the core codebase with temporary operational files and ensures CI/CD pipelines exclude these scripts from production builds or containers.
 
 2. **Versioning and documentation of scripts**
 
    * Name each script clearly, e.g., `scripts/development/reorganize_modules.py` or `scripts/development/update_imports.py`.  
-   * Document their interface (CLI flags, parameters) and purpose in both a module-level docstring and a [[README]] inside the `scripts/development/` folder.
+   * Document their interface (CLI flags, parameters) and purpose in both a module-level docstring and a [[README|README]] inside the `scripts/development/` folder.
 
 3. **Modules instead of long one-off shell commands**
 

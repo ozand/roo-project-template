@@ -1,6 +1,6 @@
-# 4\. Project Knowledge Base Management Standard
+# 4. Project Knowledge Base Management Standard
 
-### 1\. Philosophy and Goals
+### 1. Philosophy and Goals
 
 This document is the **single and exhaustive source of truth** for organizing and maintaining the project's knowledge base. Its purpose is to ensure a strict, machine-readable, and consistent structure that solves two problems:
 
@@ -11,41 +11,38 @@ Deviation from these rules is not permitted.
 
 -----
 
-### 2\. Knowledge Repository Structure
+### 2. Knowledge Repository Structure
 
 #### 2.1. Graph Root
 
-The root directory of the entire project (`b2bfinder/`) is the root of the Logseq graph. This allows for the creation of direct, clickable links from documentation to code and test files.
+The root directory of the entire project is the root of the Logseq graph. This allows for the creation of direct, clickable links from documentation to code and test files.
 
 #### 2.2. Mandatory Structure and Purpose of Folders
 
 AI agents are required to create new files only in the locations specified below.
 
 * `pages/`: **The central repository for permanent knowledge.** Contains all primary, long-living, and structured project documents (requirements, User Stories, architectural decisions, rules, dashboards).
-* `journals/`: **A chronological work log.** Used for daily, temporary notes, work logs, rough thoughts, and meeting minutes. Information from the journal should eventually be migrated and structured into `pages/`.
+* `journals/`: **A chronological work log.** Used for daily, temporary notes, work logs, and meeting minutes. Information from the journal should eventually be migrated and structured into `pages/`.
 * `assets/`: For storing images and other media files embedded in documents.
 * `logseq/`: A folder automatically managed by Logseq. AI agents are forbidden from modifying this folder directly.
 
 -----
 
-### 3\. Protocol for Creating and Naming Files in `pages/`
+### 3. Protocol for Creating and Naming Files in `pages/`
 
 To logically group documents, a **namespace** mechanism is used, which is implemented via a `.` in the filename.
 
 * **User Stories:**
-
   * **Location:** `pages/`
   * **Filename Format:** `STORY-[CATEGORY]-[ID].md` (e.g., `STORY-API-1.md`)
   * **Logseq Page Name:** `[[STORY-API-1]]`
 
 * **Requirements:**
-
   * **Location:** `pages/`
   * **Filename Format:** `REQ-[CATEGORY]-[ID].md` (e.g., `REQ-UI-3.md`)
   * **Logseq Page Name:** `[[REQ-UI-3]]`
 
 * **Rules for AI agents (`.roo/rules/`):**
-
   * **Physical Location:** The files **must** be located in `.roo/rules/`.
   * **Virtual Location in Logseq:** For integration into the knowledge graph, **symbolic links (symlinks)** to each file from `.roo/rules/` must be created in the `pages/` folder.
   * **Symlink Format:** `pages/rules.[rule_name].md` (e.g., `pages/rules.quality-guideline.md`).
@@ -53,7 +50,7 @@ To logically group documents, a **namespace** mechanism is used, which is implem
 
 -----
 
-### 4\. Linking Rules
+### 4. Linking Rules
 
 #### 4.1. Links to Documents in the Knowledge Base
 
@@ -63,12 +60,12 @@ To logically group documents, a **namespace** mechanism is used, which is implem
 #### 4.2. Links to Code Files, Tests, and Other External Files
 
 * **Principle:** The **Logseq alias** mechanism is used.
-* **Format:** `[[relative/path/to/file.py|`file\_name.py`]]`
+* **Format:** `[[relative/path/to/file.py|`file.py`]]`
 * **Example:** `The main logic is located in [[b2bfinder/services/search.py|`search.py`]].`
 
 -----
 
-### 5\. Protocol for Structuring Documents and Metadata
+### 5. Protocol for Structuring Documents and Metadata
 
 Every artifact in the `pages/` directory **must** contain a properties block at the beginning of the file. These properties classify the document and make it machine-readable for queries and automation.
 
@@ -83,7 +80,7 @@ priority:: One of the following values: `[[high]]`, `[[medium]]`, `[[low]]`
 assignee:: Link to the assignee: `[[@username]]`
 epic:: Link to the epic: `[[EPIC-NAME]]`
 related-reqs:: A comma-separated list of links to requirements: `[[REQ-ID-1]], [[REQ-ID-2]]`
-```
+````
 
 #### 5.2. Properties Schema for a Requirement
 
@@ -119,7 +116,7 @@ A file named `Project Hub.md` **must be** created in the root of the `pages/` di
 title:: Project b2bfinder Hub
 ---
 ## 🧭 Navigation
-- **Rules and Guidelines:** [[rules.quality-guideline]], [[rules.knowledge-base-standard]]
+- **Rules and Guidelines:** [[rules.quality-guideline]], [[rules.scripts-structure]], [[rules.e2e-tests-guideline]], [[rules.filename-referencing-rules]]
 - **Product:** [[product.vision]], [[requirements]], [[backlog]], [[roadmap]]
 - **Technical Documentation:** [[api]], [[caching-strategy]], [[DEPLOYMENT_PLAN]]
 
@@ -176,7 +173,8 @@ AI agents are required to follow this algorithm when working on new phases or ta
 2. **Action:**
       * **Immediately** update the status in the `STORY-*.md` file to `status:: [[DONE]]`.
       * Check if the implementation requires updating other documentation and make the necessary changes.
-3. **Output:** An updated knowledge base. The dashboards on `[[Project Hub.md]]` will update automatically.
+      * **Create a journal entry** for the current day according to the format specified in rule `7.5. Journaling on Task Completion`.
+3. **Output:** An updated knowledge base and a new entry in the daily journal. The dashboards on `[[Project Hub.md]]` will update automatically.
 
 #### 7.2. Protocol for Using Datalog Queries
 
@@ -193,6 +191,24 @@ When working on any artifact, the AI agent **must** add links to all related ent
 
 Page names should be full and descriptive (e.g., `[[Redis Caching Strategy]]` instead of `[[cache]]`).
 
+#### 7.5. Rule: Journaling on Task Completion
+
+To provide a clear chronological log for the Observer, every AI agent **must** create an entry in the daily journal upon successfully completing a task.
+
+* **Trigger:** Successful completion of a delegated task.
+
+* **Action:** Append a new block to the journal file for the current date (e.g., `journals/YYYY_MM_DD.md`).
+
+* **Format:** The journal entry **must** follow this template:
+
+    ```markdown
+    - Task Completed: `[[Name of the completed task or Story]]`
+      - **Status:** `SUCCESS`
+      - **Agent:** `[[Agent Name]]`
+      - **Summary:** A brief, one-sentence summary of the outcome.
+      - **Link to Artifacts:** Links to any primary pages that were created or modified, e.g., `[[STORY-API-5]]`.
+    ```
+
 -----
 
 ### 8\. Automation and Validation
@@ -203,10 +219,12 @@ To maintain the integrity of the knowledge base, the script `scripts/development
 
 #### 8.2. Validation Checklist (for `validate_kb.py`)
 
-The script **must** perform the following checks:
+The script **must** perform the following checks. This checklist serves as a backlog for enhancing the validation script.
 
-* [ ] **Link Integrity:** All links `[[filename]]` and `[[path/to/code.py|...]]` resolve to existing files.
-* [ ] **File Structure:** All documents are created in the correct directories and follow the naming conventions.
-* [ ] **Properties Schema:** All User Stories and Requirements have the mandatory properties.
-* [ ] **Status Correctness:** The values of the `status` property correspond to the allowed list.
-* [ ] **`title` Integrity in READMEs:** All `README.md` files have a `title::` property.
+* [x] **Link Integrity:** All links `[[filename]]` resolve to existing files. *(Implemented)*
+* [x] **Correct Link Formatting:** All links to external files (code, tests) follow the alias format `[[path/to/code.py|...]]`.
+* [x] **File Structure:** All documents are created in the correct directories (`pages/`, `journals/`) and follow the naming conventions (`STORY-*.md`, `REQ-*.md`, etc.).
+* [x] **Properties Schema:** All User Stories and Requirements have the mandatory properties (`type::`, `status::`, etc.).
+* [x] **Status Correctness:** The values of the `status` property correspond to the allowed list (`[[TODO]]`, `[[DONE]]`, etc.).
+* [x] **`title` Integrity in READMEs:** All `README.md` files have a `title::` property.
+* [x] **Handling Temporary Artifacts:** Files that are "raw" command outputs (e.g., `raw.md`, `error.errors`) must not be saved in `pages/`.
