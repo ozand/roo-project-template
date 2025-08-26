@@ -151,3 +151,5 @@ Thumbs.db
 # Project specific
 .roo/.sources/
 .roo/.specstory/
+.sources/
+.specstory/
