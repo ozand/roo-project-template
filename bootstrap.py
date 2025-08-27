@@ -82,15 +82,9 @@ def create_symlinks_in_pages(project_path: Path):
             continue
         
         for source_file in source_dir.glob("*.md"):
-            # Создаем имя для ссылки с неймспейсом, например, "rules.quality-guideline.md"
-            link_name_parts = source_file.stem.split('-', 1)
-            if len(link_name_parts) > 1 and link_name_parts[0].isdigit():
-                 # Убираем цифровой префикс типа "01-"
-                link_stem = link_name_parts[1]
-            else:
-                link_stem = source_file.stem
-
-            link_name = f"{link_type}.{link_stem}.md"
+            # ИСПРАВЛЕННАЯ ЛОГИКА: Создаем имя для ссылки, сохраняя префиксы и оригинальное имя.
+            # Например, "01-quality_guideline.md" -> "rules.01-quality_guideline.md"
+            link_name = f"{link_type}.{source_file.stem.replace('_', '-')}.md"
             link_path = pages_dir / link_name
 
             if link_path.exists() or link_path.is_symlink():
@@ -107,12 +101,17 @@ def create_symlinks_in_pages(project_path: Path):
 
 def main():
     parser = argparse.ArgumentParser(description="Скрипт для инициализации или миграции проекта из шаблона RooCode.")
-    # ... (аргументы без изменений)
+    parser.add_argument("--migrate", action='store_true', help="Запустить режим миграции для существующего проекта.")
+    parser.add_argument("--repo", type=str, default="https://github.com/ozand/roo-project-template.git", help="URL Git-репозитория с шаблоном.")
     args = parser.parse_args()
     project_root = Path.cwd()
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        # ... (код клонирования без изменений)
+        print(f"Клонирование шаблона из {args.repo}...")
+        if not run_command(["git", "clone", args.repo, "."], cwd=temp_dir):
+            print("❌ Не удалось клонировать репозиторий-шаблон. Прерываю выполнение.")
+            return
+
         template_path = Path(temp_dir)
         copy_template_files(template_path, project_root)
         if args.migrate:
@@ -121,7 +120,7 @@ def main():
     create_symlinks_in_pages(project_root)
 
     print("\n🎉 Процесс завершен!")
-    # ... (остальные сообщения без изменений)
+    print("➡️  Рекомендуется запустить `uv run python scripts/development/generate_logseq_config.py` для обновления конфигурации графа.")
 
 if __name__ == "__main__":
     main()
