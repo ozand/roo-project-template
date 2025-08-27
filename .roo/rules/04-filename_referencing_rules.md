@@ -4,7 +4,7 @@
 
 This document is the **single and exhaustive source of truth** for organizing and maintaining the project's knowledge base. Its purpose is to ensure a strict, machine-readable, and consistent structure that solves two problems:
 
-1. **For Logseq:** To create a cohesive, easily navigable, and queryable knowledge graph for humans.
+1. **For Logseq:** To create a cohesive, easily navigable, and queryable knowledge graph built from the `pages/` directory.
 2. **For AI agents:** To provide an unambiguous, algorithmic set of rules for creating, updating, and validating all project artifacts.
 
 Deviation from these rules is not permitted.
@@ -15,14 +15,15 @@ Deviation from these rules is not permitted.
 
 #### 2.1. Graph Root
 
-The root directory of the entire project is the root of the Logseq graph. This allows for the creation of direct, clickable links from documentation to code and test files.
+The root directory of the entire project is the root of the Logseq graph. The knowledge base itself resides exclusively within the `pages/` and `journals/` directories.
 
 #### 2.2. Mandatory Structure and Purpose of Folders
 
 AI agents are required to create new files only in the locations specified below.
 
-* `pages/`: **The central repository for permanent knowledge.** Contains all primary, long-living, and structured project documents (requirements, User Stories, architectural decisions, rules, dashboards).
-* `journals/`: **A chronological work log.** Used for daily, temporary notes, work logs, and meeting minutes. Information from the journal should eventually be migrated and structured into `pages/`.
+* `pages/`: **Центральный репозиторий для доступа к знаниям в Logseq.** Содержит все основные документы: User Stories, требования, а также **символические ссылки** на правила и команды.
+* `journals/`: **A chronological work log.** Used for daily notes and logging task completion.
+* `.roo/`: **Источник правды для операционных файлов.** Содержит исходные файлы правил (`.roo/rules/`) и команд (`.roo/commands/`). **Эта директория не сканируется Logseq напрямую.**
 * `assets/`: For storing images and other media files embedded in documents.
 * `logseq/`: A folder automatically managed by Logseq. AI agents are forbidden from modifying this folder directly.
 
@@ -30,7 +31,7 @@ AI agents are required to create new files only in the locations specified below
 
 ### 3. Protocol for Creating and Naming Files in `pages/`
 
-To logically group documents, a **namespace** mechanism is used, which is implemented via a `.` in the filename.
+To logically group documents, a **namespace** mechanism is used, implemented via a `.` in the filename. All primary artifacts **must be** created in `pages/`.
 
 * **User Stories:**
   * **Location:** `pages/`
@@ -42,11 +43,13 @@ To logically group documents, a **namespace** mechanism is used, which is implem
   * **Filename Format:** `REQ-[CATEGORY]-[ID].md` (e.g., `REQ-UI-3.md`)
   * **Logseq Page Name:** `[[REQ-UI-3]]`
 
-* **Rules for AI agents (`.roo/rules/`):**
-  * **Physical Location:** The files **must** be located in `.roo/rules/`.
-  * **Virtual Location in Logseq:** For integration into the knowledge graph, **symbolic links (symlinks)** to each file from `.roo/rules/` must be created in the `pages/` folder.
-  * **Symlink Format:** `pages/rules.[rule_name].md` (e.g., `pages/rules.quality-guideline.md`).
-  * **Logseq Page Name:** `[[rules/quality-guideline]]`
+* **Rules and Commands:**
+  * **Source of Truth Location:** Файлы **должны** физически находиться в `.roo/rules/` и `.roo/commands/`.
+  * **Virtual Location in Logseq:** Скрипт `bootstrap.py` автоматически создает символические ссылки из этих файлов в директорию `pages/`, используя неймспейсы `rules.*` и `commands.*`, чтобы сделать их видимыми в графе знаний.
+  * **Filename Format:**
+    * Rules: `rules.[rule-name].md` (e.g., `pages/rules.quality-guideline.md`)
+    * Commands: `commands.[command-name].md` (e.g., `pages/commands.audit-and-sync-kb.md`)  
+  * **Operational Location:** The `bootstrap.py` script automatically creates symbolic links from these files into the appropriate `.roo/` subdirectories (e.g., from `pages/rules.quality-guideline.md` to `.roo/rules/quality-guideline.md`).
 
 -----
 
@@ -215,7 +218,7 @@ To provide a clear chronological log for the Observer, every AI agent **must** c
 
 #### 8.1. Knowledge Base Linter Script
 
-To maintain the integrity of the knowledge base, the script `scripts/development/validate_kb.py` is used. It should be run in pre-commit hooks and in CI/CD.
+To maintain the integrity of the knowledge base, the script `scripts/development/validate_kb.py` is used. Its primary function is to scan the `pages/` and `journals/` directories to ensure compliance with all standards.
 
 #### 8.2. Validation Checklist (for `validate_kb.py`)
 
