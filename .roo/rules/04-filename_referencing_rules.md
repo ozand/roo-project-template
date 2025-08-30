@@ -105,6 +105,22 @@ related-epics:: A comma-separated list of links to epics: `[[EPIC-UI]], [[EPIC-I
 status:: One of the following values: `[[DRAFT]]`, `[[APPROVED]]`, `[[COMPLETED]]`
 ```
 
+#### 5.4. Properties Schema for a Learning
+
+This artifact is created at the end of a phase to document key lessons learned. It serves as input for planning future phases.
+
+* **Location:** `pages/`
+* **Filename Format:** `LEARNING-[ID].md`
+* **Logseq Page Name:** `[[LEARNING-ID]]`
+* **Properties Schema:**
+    ```markdown
+    type:: [[learning]]
+    phase:: [[Phase-X]] 
+    impact:: [[positive]] or [[negative]]
+    related-stories:: [[STORY-API-5]], [[STORY-UI-12]]
+    category:: [[technical]], [[process]], or [[communication]]
+    ```
+
 -----
 
 ### 6\. Project Management and Visualization
@@ -147,6 +163,8 @@ For automatic visualization of tasks on a Kanban board (using the Kanban plugin)
 -----
 
 ### 7\. AI Agent Work Protocols
+
+**Критически важное правило:** Перед выполнением любой задачи, ты **обязан** ознакомиться и строго следовать документу **[[rules.06-tool-usage-protocol]]**. Нарушение этого протокола, особенно неправомерное использование `execute_command`, считается серьезной ошибкой.
 
 #### 7.1. Work Algorithm (Task Lifecycle)
 
@@ -231,3 +249,34 @@ The script **must** perform the following checks. This checklist serves as a bac
 * [x] **Status Correctness:** The values of the `status` property correspond to the allowed list (`[[TODO]]`, `[[DONE]]`, etc.).
 * [x] **`title` Integrity in READMEs:** All `README.md` files have a `title::` property.
 * [x] **Handling Temporary Artifacts:** Files that are "raw" command outputs (e.g., `raw.md`, `error.errors`) must not be saved in `pages/`.
+
+-----
+
+### 9. Протоколы Отказоустойчивости и Взаимодействия
+
+#### 9.1. Протокол Обработки Ошибок
+
+Для обеспечения предсказуемости и надежности, любой AI-агент или автоматизированная `команда` **обязаны** следовать этому протоколу при возникновении ошибки (например, сбой скрипта, невалидный артефакт, непредвиденный результат).
+
+1.  **Немедленная остановка:** Агент должен прекратить выполнение текущей цепочки задач, чтобы предотвратить дальнейшие проблемы.
+2.  **Документирование сбоя:** Агент должен создать запись в `journals/` за текущий день со статусом `FAILURE`.
+    * **Формат записи о сбое:**
+        ```markdown
+        - Task Failed: `[[Имя задачи или команды, которая провалилась]]`
+          - **Status:** `FAILURE`
+          - **Agent:** `[[Имя агента]]`
+          - **Reason:** Краткое, но четкое описание причины сбоя.
+          - **Logs:** Ссылка на лог-файл или включение ключевых сообщений об ошибке.
+        ```
+3.  **Информирование пользователя:** Агент должен сообщить пользователю о сбое, предоставив ссылку на запись в журнале и рекомендации по возможному исправлению.
+
+#### 9.2. Точки Пользовательского Контроля (Human Approval Gates)
+
+Система стремится к автоматизации, но ключевые стратегические решения должны оставаться за человеком. Точки контроля — это шаги в `командах`, где требуется явное одобрение пользователя для продолжения.
+
+* **Триггер:** Шаг в `команде` помечен как требующий подтверждения (например, через свойство `human_approval_gate: true`).
+* **Действие:**
+    1.  Агент приостанавливает выполнение `команды` на этом шаге.
+    2.  Он представляет пользователю артефакт для утверждения (например, "Вот черновик плана реализации для Фазы 3: `[[phase-3-implementation-plan]]`").
+    3.  С помощью инструмента `ask_followup_question` агент запрашивает явное подтверждение, предлагая варианты: "Утвердить и продолжить", "Запросить доработку", "Отменить".
+    4.  Агент продолжает выполнение `команды` только после получения положительного ответа.

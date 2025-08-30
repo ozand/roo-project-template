@@ -1,7 +1,6 @@
 ---
 description: "Выявить и устранить расхождения между фактическим состоянием реализации в Git и документированным состоянием в базе знаний Logseq."
 ---
-
 <task>
     <name>Аудит и Синхронизация Базы Знаний</name>
     <objective>Выявить и устранить расхождения между фактическим состоянием реализации в Git и документированным состоянием в базе знаний Logseq.</objective>
@@ -9,7 +8,7 @@ description: "Выявить и устранить расхождения меж
     <context>
         <knowledge_base>Все файлы `STORY-*.md` в директории `pages/`.</knowledge_base>
         <source_of_truth_code>Логи Git-коммитов в текущей ветке.</source_of_truth_code>
-        <standard>[[rules.knowledge-base-standard]]</standard>
+        <standard>[[rules.04-filename_referencing_rules]]</standard>
     </context>
     <workflow>
         <step id="1" name="Анализ расхождений">
@@ -20,16 +19,23 @@ description: "Выявить и устранить расхождения меж
 2. Найди все User Stories со статусом `[[TODO]]` или `[[DOING]]`, для которых уже существует коммит о закрытии.
 3. Сформируй отчет о всех найденных расхождениях в моем `journal` за сегодня."
             </sub_task_prompt>
+            <on_failure>
+                <instruction>Сообщить пользователю, что агент `Project Research` не смог провести аудит, и предоставить лог ошибки.</instruction>
+            </on_failure>
         </step>
         <step id="2" name="Запрос на исправление">
             <instruction>На основе отчета от `Project Research`, запросить у пользователя подтверждение на исправление статусов в файлах `STORY-*.md`.</instruction>
             <tool_to_use>ask_followup_question</tool_to_use>
+            <human_approval_gate>true</human_approval_gate>
         </step>
         <step id="3" name="Исправление">
             <instruction>После получения подтверждения, делегировать агенту `Code` задачу по исправлению статусов.</instruction>
             <sub_task_prompt>
 "**Задача:** Внеси исправления в свойство `status` в следующих файлах User Story согласно отчету об аудите: [список файлов]."
             </sub_task_prompt>
+            <on_failure>
+                <instruction>Сообщить пользователю, что агент `Code` не смог внести исправления в статусы, и предоставить лог ошибки. Порекомендовать проверить права на запись в файлы.</instruction>
+            </on_failure>
         </step>
     </workflow>
 </task>
