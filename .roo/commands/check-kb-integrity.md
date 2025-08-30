@@ -3,57 +3,57 @@ description: "Выполняет синхронизацию статусов Use
 ---
 
 <task>
-    <name>Аудит и Синхронизация Базы Знаний с Git</name>
-    <objective>Автоматически выявить и устранить расхождения между статусами User Stories в Logseq и наличием закрывающих коммитов в Git.</objective>
-    <trigger>По ручному запуску перед закрытием фазы или еженедельно.</trigger>
+    <name>Audit and Synchronize Knowledge Base with Git</name>
+    <objective>Automatically identify and resolve discrepancies between User Story statuses in Logseq and the presence of closing commits in Git.</objective>
+    <trigger>Manual trigger before closing a phase or weekly.</trigger>
     <context>
         <tool_to_use>scripts/development/validate_kb.py</tool_to_use>
         <tool_to_use>scripts/development/sync_git_kb.py</tool_to_use>
-        <source_of_truth>Логи Git-коммитов и файлы `STORY-*.md` в `pages/`.</source_of_truth>
+        <source_of_truth>Git commit logs and `STORY-*.md` files in `pages/`.</source_of_truth>
         <standard>[[04-filename-referencing-rules]]</standard>
     </context>
     <workflow>
-        <step id="1" name="Предварительная проверка целостности">
-            <instruction>Делегировать агенту `Code`.</instruction>
+        <step id="1" name="Preliminary Integrity Check">
+            <instruction>Delegate to the `Code` agent.</instruction>
             <sub_task_prompt>
-"**Задача:** Перед началом синхронизации убедись, что база знаний не содержит базовых ошибок.
-1.  Выполни команду: `python scripts/development/validate_kb.py`.
-2.  Если скрипт находит ошибки, останови выполнение и сообщи мне о них. В противном случае, переходи к следующему шагу."
+"**Task:** Before starting synchronization, ensure the knowledge base does not contain basic errors.
+1.  Execute the command: `python scripts/development/validate_kb.py`.
+2.  If the script finds errors, stop execution and report them to me. Otherwise, proceed to the next step."
             </sub_task_prompt>
         </step>
 
-        <step id="2" name="Анализ отчета и определение следующих шагов">
-            <instruction>Проанализировать отчет валидации и определить дальнейшие действия.</instruction>
+        <step id="2" name="Analyze Report and Determine Next Steps">
+            <instruction>Analyze the validation report and determine the next actions.</instruction>
             <sub_task_prompt>
-"**Задача:** Проанализируй `validation_report.log` и определи план.
-1.  Прочитай файл `validation_report.log`.
-2.  **Если в отчете есть ошибки типа 'Misplaced file'**:
-    -   Сообщи мне об этом.
-    -   Порекомендуй запустить команду `Интеграция Бродячих Файлов` для их исправления.
-    -   **Не продолжай** выполнение текущей задачи, так как сначала нужно исправить расположение файлов.
-3.  **Если есть другие ошибки (например, 'Broken link')**:
-    -   Сформируй JSON-план для их исправления и запроси у меня подтверждение, как и раньше.
-4.  **Если ошибок нет**:
-    -   Сообщи, что проверка прошла успешно, и заверши задачу."
+"**Task:** Analyze `validation_report.log` and determine a plan.
+1.  Read the `validation_report.log` file.
+2.  **If the report contains 'Misplaced file' errors**:
+    -   Inform me about it.
+    -   Recommend running the `Integrate Stray Files` command to fix them.
+    -   **Do not continue** with the current task, as the file locations need to be corrected first.
+3.  **If there are other errors (e.g., 'Broken link')**:
+    -   Create a JSON plan to fix them and request my confirmation, as before.
+4.  **If there are no errors**:
+    -   Report that the check was successful and complete the task."
             </sub_task_prompt>
         </step>
 
-        <step id="3" name="Автоматическое исправление статусов">
-            <instruction>На основе отчета `sync_report.json` делегировать агенту `Code` задачу по исправлению статусов.</instruction>
+        <step id="3" name="Automatic Status Correction">
+            <instruction>Based on the `sync_report.json` report, delegate the task of correcting statuses to the `Code` agent.</instruction>
             <sub_task_prompt>
-"**Задача:** Исправь статусы в файлах User Story согласно отчету.
-1.  Прочитай файл `sync_report.json`.
-2.  Для **каждой** записи в отчете, открой указанный файл `STORY-*.md` и установи правильный статус (`status:: [[DONE]]` или `status:: [[TODO]]`) в соответствии с рекомендацией из отчета.
-3.  После внесения всех исправлений, удали файл `sync_report.json`."
+"**Task:** Correct the statuses in the User Story files according to the report.
+1.  Read the `sync_report.json` file.
+2.  For **each** entry in the report, open the specified `STORY-*.md` file and set the correct status (`status:: [[DONE]]` or `status:: [[TODO]]`) according to the recommendation in the report.
+3.  After making all corrections, delete the `sync_report.json` file."
             </sub_task_prompt>
         </step>
 
-        <step id="4" name="Финальный отчет">
-             <instruction>Сообщить о завершении и сделать запись в журнале.</instruction>
+        <step id="4" name="Final Report">
+             <instruction>Report completion and make a journal entry.</instruction>
              <sub_task_prompt>
-"**Задача:** Заверши задачу и задокументируй результат.
-1.  Сформируй краткий отчет о том, сколько User Stories было исправлено.
-2.  Создай запись в журнале за сегодняшний день по стандарту `7.5. Journaling on Task Completion`."
+"**Task:** Complete the task and document the result.
+1.  Create a brief report on how many User Stories were corrected.
+2.  Create a journal entry for today according to the `7.5. Journaling on Task Completion` standard."
              </sub_task_prompt>
         </step>
     </workflow>

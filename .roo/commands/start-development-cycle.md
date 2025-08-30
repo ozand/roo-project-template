@@ -2,40 +2,40 @@
 description: "Последовательно реализовать все User Stories, определенные в плане реализации для текущей фазы проекта."
 ---
 <task>
-    <name>Начало Цикла Разработки по Плану</name>
-    <objective>Последовательно реализовать все User Stories, определенные в плане реализации для текущей фазы проекта.</objective>
-    <trigger>Успешное завершение задачи "Инициация Фазы Разработки" и наличие утвержденного `implementation-plan`.</trigger>
+    <name>Start Development Cycle According to Plan</name>
+    <objective>To sequentially implement all User Stories defined in the implementation plan for the current project phase.</objective>
+    <trigger>Successful completion of the "Initiate Development Phase" task and the presence of an approved `implementation-plan`.</trigger>
     <context>
         <implementation_plan>[[pages/phase-[X]-implementation-plan]]</implementation_plan>
         <standard>[[rules.04-filename_referencing_rules]]</standard>
     </context>
     <workflow>
-        <step id="1" name="Определение списка задач">
-            <instruction>Проанализировать документ `<implementation_plan>` и извлечь из него полный, упорядоченный список User Stories (`[[STORY-ID]]`), подлежащих реализации в этой фазе.</instruction>
+        <step id="1" name="Define the Task List">
+            <instruction>Analyze the `<implementation_plan>` document and extract a complete, ordered list of User Stories (`[[STORY-ID]]`) to be implemented in this phase.</instruction>
             <tool_to_use>read</tool_to_use>
             <on_failure>
-                <instruction>Сообщить пользователю, что не удалось прочитать план реализации или извлечь из него список задач.</instruction>
+                <instruction>Inform the user that the implementation plan could not be read or the task list could not be extracted from it.</instruction>
             </on_failure>
         </step>
-        <step id="2" name="Последовательная реализация">
-            <instruction>Для каждой User Story из полученного списка, в строгом порядке, делегировать задачу на реализацию агенту `Code`.</instruction>
+        <step id="2" name="Sequential Implementation">
+            <instruction>For each User Story from the obtained list, in strict order, delegate the implementation task to the `Code` agent.</instruction>
             <sub_task_prompt_template>
-"**Задача:** Реализуй User Story `[[STORY-ID]]`.
-**Контекст:**
-- Детальное описание и критерии приемки находятся в файле `[[STORY-ID]]`.
-- Технические спецификации и зависимости описаны в `[[implementation_plan]]`.
-- Всегда следуй стандартам кодирования из `[[rules.01-quality_guideline]]`.
-**Протокол:**
-1. Перед началом работы измени свойство `status` в файле `[[STORY-ID]]` на `[[DOING]]`.
-2. После завершения реализации и прохождения тестов, измени свойство `status` на `[[DONE]]`.
-3. Создай ссылки на все измененные или созданные файлы кода в документе `[[STORY-ID]]`."
+"**Task:** Implement User Story `[[STORY-ID]]`.
+**Context:**
+- A detailed description and acceptance criteria are in the `[[STORY-ID]]` file.
+- Technical specifications and dependencies are described in the `[[implementation_plan]]`.
+- Always follow the coding standards from `[[rules.01-quality_guideline]]`.
+**Protocol:**
+1. Before starting work, change the `status` property in the `[[STORY-ID]]` file to `[[DOING]]`.
+2. After completing the implementation and passing tests, change the `status` property to `[[DONE]]`.
+3. Create links to all modified or created code files in the `[[STORY-ID]]` document."
             </sub_task_prompt_template>
             <on_failure>
-                <instruction>Сообщить пользователю о сбое при реализации `[[STORY-ID]]`. Предоставить лог от агента `Code` и приостановить цикл разработки до решения проблемы.</instruction>
+                <instruction>Inform the user of a failure during the implementation of `[[STORY-ID]]`. Provide the log from the `Code` agent and pause the development cycle until the issue is resolved.</instruction>
             </on_failure>
         </step>
-        <step id="3" name="Завершение фазы">
-            <instruction>После того, как все User Stories из списка будут выполнены (получат статус `[[DONE]]`), инициировать задачу "Ретроспектива и Закрытие Фазы".</instruction>
+        <step id="3" name="Phase Completion">
+            <instruction>After all User Stories from the list have been completed (status changed to `[[DONE]]`), initiate the "Retrospective and Phase Closure" task.</instruction>
         </step>
     </workflow>
 </task>

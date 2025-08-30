@@ -4,8 +4,8 @@
 
 This document is the **single and exhaustive source of truth** for organizing and maintaining the project's knowledge base. Its purpose is to ensure a strict, machine-readable, and consistent structure that solves two problems:
 
-1. **For Logseq:** To create a cohesive, easily navigable, and queryable knowledge graph built from the `pages/` directory.
-2. **For AI agents:** To provide an unambiguous, algorithmic set of rules for creating, updating, and validating all project artifacts.
+1.  **For Logseq:** To create a cohesive, easily navigable, and queryable knowledge graph built from the `pages/` directory.
+2.  **For AI agents:** To provide an unambiguous, algorithmic set of rules for creating, updating, and validating all project artifacts.
 
 Deviation from these rules is not permitted.
 
@@ -21,11 +21,11 @@ The root directory of the entire project is the root of the Logseq graph. The kn
 
 AI agents are required to create new files only in the locations specified below.
 
-* `pages/`: **Центральный репозиторий для доступа к знаниям в Logseq.** Содержит все основные документы: User Stories, требования, а также **символические ссылки** на правила и команды.
-* `journals/`: **A chronological work log.** Used for daily notes and logging task completion.
-* `.roo/`: **Источник правды для операционных файлов.** Содержит исходные файлы правил (`.roo/rules/`) и команд (`.roo/commands/`). **Эта директория не сканируется Logseq напрямую.**
-* `assets/`: For storing images and other media files embedded in documents.
-* `logseq/`: A folder automatically managed by Logseq. AI agents are forbidden from modifying this folder directly.
+  * `pages/`: **The central repository for accessing knowledge in Logseq.** Contains all main documents: User Stories, requirements, as well as **symbolic links** to rules and commands.
+  * `journals/`: **A chronological work log.** Used for daily notes and logging task completion.
+  * `.roo/`: **The source of truth for operational files.** Contains the source files for rules (`.roo/rules/`) and commands (`.roo/commands/`). **This directory is not scanned by Logseq directly.**
+  * `assets/`: For storing images and other media files embedded in documents.
+  * `logseq/`: A folder automatically managed by Logseq. AI agents are forbidden from modifying this folder directly.
 
 -----
 
@@ -33,23 +33,26 @@ AI agents are required to create new files only in the locations specified below
 
 To logically group documents, a **namespace** mechanism is used, implemented via a `.` in the filename. All primary artifacts **must be** created in `pages/`.
 
-* **User Stories:**
-  * **Location:** `pages/`
-  * **Filename Format:** `STORY-[CATEGORY]-[ID].md` (e.g., `STORY-API-1.md`)
-  * **Logseq Page Name:** `[[STORY-API-1]]`
+  * **User Stories:**
 
-* **Requirements:**
-  * **Location:** `pages/`
-  * **Filename Format:** `REQ-[CATEGORY]-[ID].md` (e.g., `REQ-UI-3.md`)
-  * **Logseq Page Name:** `[[REQ-UI-3]]`
+      * **Location:** `pages/`
+      * **Filename Format:** `STORY-[CATEGORY]-[ID].md` (e.g., `STORY-API-1.md`)
+      * **Logseq Page Name:** `[[STORY-API-1]]`
 
-* **Rules and Commands:**
-  * **Source of Truth Location:** Файлы **должны** физически находиться в `.roo/rules/` и `.roo/commands/`.
-  * **Virtual Location in Logseq:** Скрипт `bootstrap.py` автоматически создает символические ссылки из этих файлов в директорию `pages/`, используя неймспейсы `rules.*` и `commands.*`, чтобы сделать их видимыми в графе знаний.
-  * **Filename Format:**
-    * Rules: `rules.[rule-name].md` (e.g., `pages/rules.quality-guideline.md`)
-    * Commands: `commands.[command-name].md` (e.g., `pages/commands.audit-and-sync-kb.md`)  
-  * **Operational Location:** The `bootstrap.py` script automatically creates symbolic links from these files into the appropriate `.roo/` subdirectories (e.g., from `pages/rules.quality-guideline.md` to `.roo/rules/quality-guideline.md`).
+  * **Requirements:**
+
+      * **Location:** `pages/`
+      * **Filename Format:** `REQ-[CATEGORY]-[ID].md` (e.g., `REQ-UI-3.md`)
+      * **Logseq Page Name:** `[[REQ-UI-3]]`
+
+  * **Rules and Commands:**
+
+      * **Source of Truth Location:** Files **must** physically reside in `.roo/rules/` and `.roo/commands/`.
+      * **Virtual Location in Logseq:** The `bootstrap.py` script automatically creates symbolic links from these files into the `pages/` directory, using the `rules.*` and `commands.*` namespaces to make them visible in the knowledge graph.
+      * **Filename Format:**
+          * Rules: `rules.[rule-name].md` (e.g., `pages/rules.quality-guideline.md`)
+          * Commands: `commands.[command-name].md` (e.g., `pages/commands.audit-and-sync-kb.md`)
+      * **Operational Location:** The `bootstrap.py` script automatically creates symbolic links from these files into the appropriate `.roo/` subdirectories (e.g., from `pages/rules.quality-guideline.md` to `.roo/rules/quality-guideline.md`).
 
 -----
 
@@ -57,14 +60,14 @@ To logically group documents, a **namespace** mechanism is used, implemented via
 
 #### 4.1. Links to Documents in the Knowledge Base
 
-* **Format:** `[[page_name]]`
-* **Example:** `This task implements the requirement [[REQ-UI-5]].`
+  * **Format:** `[[page_name]]`
+  * **Example:** `This task implements the requirement [[REQ-UI-5]].`
 
 #### 4.2. Links to Code Files, Tests, and Other External Files
 
-* **Principle:** The **Logseq alias** mechanism is used.
-* **Format:** `[[relative/path/to/file.py|`file.py`]]`
-* **Example:** `The main logic is located in [[b2bfinder/services/search.py|`search.py`]].`
+  * **Principle:** The **Logseq alias** mechanism is used.
+  * **Format:** `[[relative/path/to/file.py|`file.py`]]`
+  * **Example:** `The main logic is located in [[b2bfinder/services/search.py|`search.py`]].`
 
 -----
 
@@ -83,7 +86,7 @@ priority:: One of the following values: `[[high]]`, `[[medium]]`, `[[low]]`
 assignee:: Link to the assignee: `[[@username]]`
 epic:: Link to the epic: `[[EPIC-NAME]]`
 related-reqs:: A comma-separated list of links to requirements: `[[REQ-ID-1]], [[REQ-ID-2]]`
-````
+```
 
 #### 5.2. Properties Schema for a Requirement
 
@@ -109,10 +112,10 @@ status:: One of the following values: `[[DRAFT]]`, `[[APPROVED]]`, `[[COMPLETED]
 
 This artifact is created at the end of a phase to document key lessons learned. It serves as input for planning future phases.
 
-* **Location:** `pages/`
-* **Filename Format:** `LEARNING-[ID].md`
-* **Logseq Page Name:** `[[LEARNING-ID]]`
-* **Properties Schema:**
+  * **Location:** `pages/`
+  * **Filename Format:** `LEARNING-[ID].md`
+  * **Logseq Page Name:** `[[LEARNING-ID]]`
+  * **Properties Schema:**
     ```markdown
     type:: [[learning]]
     phase:: [[Phase-X]] 
@@ -123,7 +126,7 @@ This artifact is created at the end of a phase to document key lessons learned. 
 
 -----
 
-### 6\. Project Management and Visualization
+### 6. Project Management and Visualization
 
 #### 6.1. Rule: Mandatory Creation of a Project Hub
 
@@ -152,19 +155,19 @@ title:: Project b2bfinder Hub
 
 For automatic visualization of tasks on a Kanban board (using the Kanban plugin), AI agents must strictly follow these rules.
 
-* **Data Source for Columns:** The `status` property in a User Story is the single source of truth for determining which column of the Kanban board a task is in.
-* **Mapping Statuses to Columns:**
-  * `status:: [[TODO]]` ➔ **"To Do"** column
-  * `status:: [[DOING]]` ➔ **"In Progress"** column
-  * `status:: [[DONE]]` ➔ **"Done"** column
-* **Data on Cards:** The Kanban plugin should be configured to display the values of the `priority` and `assignee` properties on the cards for quick assessment of the task.
-* **Updating:** An AI agent, upon completing a task or starting to work on it, **must** update the `status` property in the corresponding `STORY-*.md` file. The Kanban board on the `[[Project Hub.md]]` page will update automatically.
+  * **Data Source for Columns:** The `status` property in a User Story is the single source of truth for determining which column of the Kanban board a task is in.
+  * **Mapping Statuses to Columns:**
+      * `status:: [[TODO]]` ➔ **"To Do"** column
+      * `status:: [[DOING]]` ➔ **"In Progress"** column
+      * `status:: [[DONE]]` ➔ **"Done"** column
+  * **Data on Cards:** The Kanban plugin should be configured to display the values of the `priority` and `assignee` properties on the cards for quick assessment of the task.
+  * **Updating:** An AI agent, upon completing a task or starting to work on it, **must** update the `status` property in the corresponding `STORY-*.md` file. The Kanban board on the `[[Project Hub.md]]` page will update automatically.
 
 -----
 
-### 7\. AI Agent Work Protocols
+### 7. AI Agent Work Protocols
 
-**Критически важное правило:** Перед выполнением любой задачи, ты **обязан** ознакомиться и строго следовать документу **[[rules.06-tool-usage-protocol]]**. Нарушение этого протокола, особенно неправомерное использование `execute_command`, считается серьезной ошибкой.
+**Critical Rule:** Before executing any task, you are **obligated** to review and strictly follow the document **[[rules.06-tool-usage-protocol]]**. Violation of this protocol, especially the improper use of `execute_command`, is considered a serious error.
 
 #### 7.1. Work Algorithm (Task Lifecycle)
 
@@ -172,37 +175,37 @@ AI agents are required to follow this algorithm when working on new phases or ta
 
 **Phase 1: Analysis and Decomposition**
 
-1. **Input:** Receive a link to a high-level document with tasks (e.g., `[[phase5-implementation-plan]]`).
-2. **Action:** Analyze the document. For **each** individual feature or improvement, follow this protocol:
+1.  **Input:** Receive a link to a high-level document with tasks (e.g., `[[phase5-implementation-plan]]`).
+2.  **Action:** Analyze the document. For **each** individual feature or improvement, follow this protocol:
       * Create a new file `pages/STORY-[CATEGORY]-[ID].md`.
       * Fill out the file according to the User Story template, adding the **mandatory properties** from section 5.1.
       * Inside the file, describe the User Story and Acceptance Criteria in detail.
-3. **Output:** A set of new, atomic User Story pages in the `pages/` folder.
+3.  **Output:** A set of new, atomic User Story pages in the `pages/` folder.
 
 **Phase 2: Implementation**
 
-1. **Input:** Pick up one User Story with the status `[[TODO]]`.
-2. **Action:**
+1.  **Input:** Pick up one User Story with the status `[[TODO]]`.
+2.  **Action:**
       * **Immediately** update the status in the `STORY-*.md` file to `status:: [[DOING]]`.
       * Proceed with implementing the code and tests.
       * Git commits **must** include the story ID (e.g., `feat: Implement search filters (STORY-API-1)`).
-3. **Output:** Completed code that corresponds to the User Story.
+3.  **Output:** Completed code that corresponds to the User Story.
 
 **Phase 3: Completion**
 
-1. **Input:** A completed and tested implementation.
-2. **Action:**
+1.  **Input:** A completed and tested implementation.
+2.  **Action:**
       * **Immediately** update the status in the `STORY-*.md` file to `status:: [[DONE]]`.
       * Check if the implementation requires updating other documentation and make the necessary changes.
       * **Create a journal entry** for the current day according to the format specified in rule `7.5. Journaling on Task Completion`.
-3. **Output:** An updated knowledge base and a new entry in the daily journal. The dashboards on `[[Project Hub.md]]` will update automatically.
+3.  **Output:** An updated knowledge base and a new entry in the daily journal. The dashboards on `[[Project Hub.md]]` will update automatically.
 
 #### 7.2. Protocol for Using Datalog Queries
 
 To obtain global context and analyze relationships, AI agents are **permitted and instructed** to use Datalog queries.
 
-* **Purpose:** Queries are used to retrieve information that is not contained in a single file.
-* **Example Scenario:** Before starting work on `[[STORY-API-3]]`, the agent must check the status of the dependent task `[[STORY-INFRA-1]]` by executing the query `{{query (and (page-ref "STORY-INFRA-1") (property type story))}}` and analyzing the `status` property.
+  * **Purpose:** Queries are used to retrieve information that is not contained in a single file.
+  * **Example Scenario:** Before starting work on `[[STORY-API-3]]`, the agent must check the status of the dependent task `[[STORY-INFRA-1]]` by executing the query `{{query (and (page-ref "STORY-INFRA-1") (property type story))}}` and analyzing the `status` property.
 
 #### 7.3. Rule: Contextual Linking
 
@@ -216,12 +219,9 @@ Page names should be full and descriptive (e.g., `[[Redis Caching Strategy]]` in
 
 To provide a clear chronological log for the Observer, every AI agent **must** create an entry in the daily journal upon successfully completing a task.
 
-* **Trigger:** Successful completion of a delegated task.
-
-* **Action:** Append a new block to the journal file for the current date (e.g., `journals/YYYY_MM_DD.md`).
-
-* **Format:** The journal entry **must** follow this template:
-
+  * **Trigger:** Successful completion of a delegated task.
+  * **Action:** Append a new block to the journal file for the current date (e.g., `journals/YYYY_MM_DD.md`).
+  * **Format:** The journal entry **must** follow this template:
     ```markdown
     - Task Completed: `[[Name of the completed task or Story]]`
       - **Status:** `SUCCESS`
@@ -232,7 +232,7 @@ To provide a clear chronological log for the Observer, every AI agent **must** c
 
 -----
 
-### 8\. Automation and Validation
+### 8. Automation and Validation
 
 #### 8.1. Knowledge Base Linter Script
 
@@ -242,41 +242,41 @@ To maintain the integrity of the knowledge base, the script `scripts/development
 
 The script **must** perform the following checks. This checklist serves as a backlog for enhancing the validation script.
 
-* [x] **Link Integrity:** All links `[[filename]]` resolve to existing files. *(Implemented)*
-* [x] **Correct Link Formatting:** All links to external files (code, tests) follow the alias format `[[path/to/code.py|...]]`.
-* [x] **File Structure:** All documents are created in the correct directories (`pages/`, `journals/`) and follow the naming conventions (`STORY-*.md`, `REQ-*.md`, etc.).
-* [x] **Properties Schema:** All User Stories and Requirements have the mandatory properties (`type::`, `status::`, etc.).
-* [x] **Status Correctness:** The values of the `status` property correspond to the allowed list (`[[TODO]]`, `[[DONE]]`, etc.).
-* [x] **`title` Integrity in READMEs:** All `README.md` files have a `title::` property.
-* [x] **Handling Temporary Artifacts:** Files that are "raw" command outputs (e.g., `raw.md`, `error.errors`) must not be saved in `pages/`.
+  * [x] **Link Integrity:** All links `[[filename]]` resolve to existing files. *(Implemented)*
+  * [x] **Correct Link Formatting:** All links to external files (code, tests) follow the alias format `[[path/to/code.py|...]]`.
+  * [x] **File Structure:** All documents are created in the correct directories (`pages/`, `journals/`) and follow the naming conventions (`STORY-*.md`, `REQ-*.md`, etc.).
+  * [x] **Properties Schema:** All User Stories and Requirements have the mandatory properties (`type::`, `status::`, etc.).
+  * [x] **Status Correctness:** The values of the `status` property correspond to the allowed list (`[[TODO]]`, `[[DONE]]`, etc.).
+  * [x] **`title` Integrity in READMEs:** All `README.md` files have a `title::` property.
+  * [x] **Handling Temporary Artifacts:** Files that are "raw" command outputs (e.g., `raw.md`, `error.errors`) must not be saved in `pages/`.
 
 -----
 
-### 9. Протоколы Отказоустойчивости и Взаимодействия
+### 9. Fault Tolerance and Interaction Protocols
 
-#### 9.1. Протокол Обработки Ошибок
+#### 9.1. Error Handling Protocol
 
-Для обеспечения предсказуемости и надежности, любой AI-агент или автоматизированная `команда` **обязаны** следовать этому протоколу при возникновении ошибки (например, сбой скрипта, невалидный артефакт, непредвиденный результат).
+To ensure predictability and reliability, any AI agent or automated `command` is **obligated** to follow this protocol when an error occurs (e.g., script failure, invalid artifact, unexpected result).
 
-1.  **Немедленная остановка:** Агент должен прекратить выполнение текущей цепочки задач, чтобы предотвратить дальнейшие проблемы.
-2.  **Документирование сбоя:** Агент должен создать запись в `journals/` за текущий день со статусом `FAILURE`.
-    * **Формат записи о сбое:**
+1.  **Immediate Halt:** The agent must stop the execution of the current task chain to prevent further issues.
+2.  **Failure Documentation:** The agent must create an entry in `journals/` for the current day with a `FAILURE` status.
+      * **Failure Log Format:**
         ```markdown
-        - Task Failed: `[[Имя задачи или команды, которая провалилась]]`
+        - Task Failed: `[[Name of the failed task or command]]`
           - **Status:** `FAILURE`
-          - **Agent:** `[[Имя агента]]`
-          - **Reason:** Краткое, но четкое описание причины сбоя.
-          - **Logs:** Ссылка на лог-файл или включение ключевых сообщений об ошибке.
+          - **Agent:** `[[Agent Name]]`
+          - **Reason:** A brief but clear description of the cause of the failure.
+          - **Logs:** A link to the log file or inclusion of key error messages.
         ```
-3.  **Информирование пользователя:** Агент должен сообщить пользователю о сбое, предоставив ссылку на запись в журнале и рекомендации по возможному исправлению.
+3.  **User Notification:** The agent must inform the user about the failure, providing a link to the journal entry and recommendations for a possible fix.
 
-#### 9.2. Точки Пользовательского Контроля (Human Approval Gates)
+#### 9.2. Human Approval Gates
 
-Система стремится к автоматизации, но ключевые стратегические решения должны оставаться за человеком. Точки контроля — это шаги в `командах`, где требуется явное одобрение пользователя для продолжения.
+The system aims for automation, but key strategic decisions must remain with a human. Approval gates are steps in `commands` where explicit user approval is required to proceed.
 
-* **Триггер:** Шаг в `команде` помечен как требующий подтверждения (например, через свойство `human_approval_gate: true`).
-* **Действие:**
-    1.  Агент приостанавливает выполнение `команды` на этом шаге.
-    2.  Он представляет пользователю артефакт для утверждения (например, "Вот черновик плана реализации для Фазы 3: `[[phase-3-implementation-plan]]`").
-    3.  С помощью инструмента `ask_followup_question` агент запрашивает явное подтверждение, предлагая варианты: "Утвердить и продолжить", "Запросить доработку", "Отменить".
-    4.  Агент продолжает выполнение `команды` только после получения положительного ответа.
+  * **Trigger:** A step in a `command` is marked as requiring confirmation (e.g., via the `human_approval_gate: true` property).
+  * **Action:**
+    1.  The agent pauses the execution of the `command` at this step.
+    2.  It presents the artifact to the user for approval (e.g., "Here is the draft implementation plan for Phase 3: `[[phase-3-implementation-plan]]`").
+    3.  Using the `ask_followup_question` tool, the agent requests explicit confirmation, offering options like: "Approve and continue," "Request revision," "Cancel."
+    4.  The agent continues executing the `command` only after receiving a positive response.

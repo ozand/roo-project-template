@@ -2,46 +2,46 @@
 description: "Проанализировать результаты завершенной фазы и задокументировать ключевые уроки для улучшения будущих процессов."
 ---
 <task>
-    <name>Извлечение Уроков из Завершенной Фазы</name>
-    <objective>Проанализировать результаты завершенной фазы и задокументировать ключевые уроки для улучшения будущих процессов.</objective>
-    <trigger>Успешное выполнение команды "Ретроспектива и Закрытие Фазы".</trigger>
+    <name>Extracting Lessons from a Completed Phase</name>
+    <objective>To analyze the results of a completed phase and document key lessons to improve future processes.</objective>
+    <trigger>Successful completion of the "Retrospective and Phase Closure" command.</trigger>
     <context>
-        <knowledge_base>Все файлы `STORY-*.md` и `REQ-*.md` относящиеся к завершенной фазе.</knowledge_base>
-        <standard>[[rules.04-filename-referencing-rules]]</standard>
+        <knowledge_base>All `STORY-*.md` and `REQ-*.md` files related to the completed phase.</knowledge_base>
+        <standard>[[rules.04-filename_referencing-rules]]</standard>
     </context>
     <workflow>
-        <step id="1" name="Анализ артефактов фазы и поиск паттернов">
-            <instruction>Делегировать задачу агенту `Project Research`.</instruction>
+        <step id="1" name="Analyze Phase Artifacts and Find Patterns">
+            <instruction>Delegate the task to the `Project Research` agent.</instruction>
             <sub_task_prompt>
-"**Задача:** Проанализируй все артефакты (в основном `STORY-*.md`) из фазы [[Phase-X]]. Твоя цель — найти инсайты для улучшения.
-**Ищи паттерны:**
-- **Технические:** Какие технические решения оказались особенно удачными или проблемными? Где было больше всего багов?
-- **Процессные:** Какие задачи заняли неожиданно много или мало времени? Были ли проблемы с зависимостями между задачами?
-- **Качество требований:** Были ли User Stories, которые часто переделывались из-за нечетких критериев приемки?
-**Результат:** Подготовь структурированный отчет с этими инсайтами в моем журнале за сегодня."
+"**Task:** Analyze all artifacts (mainly `STORY-*.md`) from phase [[Phase-X]]. Your goal is to find insights for improvement.
+**Look for patterns:**
+- **Technical:** Which technical solutions were particularly successful or problematic? Where were the most bugs?
+- **Process:** Which tasks took an unexpectedly long or short time? Were there issues with dependencies between tasks?
+- **Requirement Quality:** Were there User Stories that were frequently reworked due to unclear acceptance criteria?
+**Result:** Prepare a structured report with these insights in my journal for today."
             </sub_task_prompt>
             <on_failure>
-                <instruction>Сообщить пользователю, что не удалось проанализировать результаты фазы. Предоставить лог ошибки от `Project Research`.</instruction>
+                <instruction>Inform the user that the phase results could not be analyzed. Provide the error log from `Project Research`.</instruction>
             </on_failure>
         </step>
-        <step id="2" name="Формализация уроков">
-            <instruction>На основе отчета от `Project Research`, делегировать задачу агенту `User Story Creator`.</instruction>
+        <step id="2" name="Formalize Lessons">
+            <instruction>Based on the report from `Project Research`, delegate the task to the `User Story Creator` agent.</instruction>
             <sub_task_prompt>
-"**Задача:** Для каждого инсайта из отчета `Project Research` создай отдельный, атомарный файл `pages/LEARNING-[ID].md`.
-**Протокол:**
-1. Внимательно изучи инсайт.
-2. Определи его `impact` (positive/negative) и `category` (technical, process, communication).
-3. Создай файл `LEARNING-*.md` и заполни все свойства согласно стандарту [[rules.04-filename-referencing-rules]].
-4. В теле файла подробно опиши суть урока и дай конкретную рекомендацию на будущее."
+"**Task:** For each insight from the `Project Research` report, create a separate, atomic file `pages/LEARNING-[ID].md`.
+**Protocol:**
+1. Carefully study the insight.
+2. Determine its `impact` (positive/negative) and `category` (technical, process, communication).
+3. Create the `LEARNING-*.md` file and fill in all properties according to the [[rules.04-filename_referencing-rules]] standard.
+4. In the body of the file, describe the essence of the lesson in detail and provide a specific recommendation for the future."
             </sub_task_prompt>
             <on_failure>
-                <instruction>Сообщить пользователю, что не удалось задокументировать уроки. Предоставить лог ошибки от `User Story Creator`.</instruction>
+                <instruction>Inform the user that the lessons could not be documented. Provide the error log from `User Story Creator`.</instruction>
             </on_failure>
         </step>
-         <step id="3" name="Финальный отчет">
-             <instruction>Сообщить пользователю о завершении анализа и количестве созданных "уроков".</instruction>
+         <step id="3" name="Final Report">
+             <instruction>Inform the user about the completion of the analysis and the number of "lessons" created.</instruction>
              <sub_task_prompt>
-"**Задача:** Подготовь краткий отчет о завершении извлечения уроков. Укажи, сколько всего `LEARNING-*.md` было создано и дай на них ссылки. Порекомендуй пользователю ознакомиться с ними перед запуском команды планирования следующей фазы."
+"**Task:** Prepare a brief report on the completion of the lesson extraction. State how many `LEARNING-*.md` files were created and provide links to them. Recommend that the user review them before running the command to plan the next phase."
              </sub_task_prompt>
         </step>
     </workflow>

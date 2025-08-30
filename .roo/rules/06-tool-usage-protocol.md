@@ -1,32 +1,32 @@
-# 6. Протокол Предпочтения Инструментов
+# 6. Tool Preference Protocol
 
-### 1. Золотое Правило
+### 1. The Golden Rule
 
-**МАНДАТ:** Ты **обязан** всегда отдавать предпочтение специализированным инструментам RooCode (`read_file`, `list_files`, `write_to_file` и т.д.) перед универсальным инструментом `execute_command`. Инструмент `execute_command` следует использовать только в тех случаях, когда задача не может быть выполнена специализированным инструментом.
+**MANDATE:** You **must** always prefer specialized RooCode tools (`read_file`, `list_files`, `write_to_file`, etc.) over the general-purpose `execute_command` tool. The `execute_command` tool should only be used for tasks that cannot be accomplished with a specialized tool.
 
-### 2. Таблица Соответствия: Что Использовать Вместо Команд Терминала
+### 2. Equivalency Table: What to Use Instead of Terminal Commands
 
-Эта таблица определяет, какой инструмент RooCode является предпочтительным для выполнения распространенных задач.
+This table defines which RooCode tool is preferred for performing common tasks.
 
-| Вместо этих команд терминала... | **Всегда используй этот инструмент RooCode** | Почему это лучше |
+| Instead of these terminal commands... | **Always use this RooCode tool** | Why this is better |
 | :--- | :--- | :--- |
-| `cat`, `head`, `tail`, `less`, `more` | **`<read_file>`** | [cite_start]Возвращает контент с номерами строк, поддерживает частичное чтение больших файлов и безопасен[cite: 485, 487]. |
-| `ls`, `find`, `tree` | **`<list_files>`** | [cite_start]Работает рекурсивно, уважает `.gitignore` и `.rooignore`, интеллектуально форматирует вывод для лучшего понимания структуры проекта[cite: 445, 450]. |
-| `echo "..." >`, `echo "..." >>` | **`<write_to_file>`** или **`<insert_content>`** | [cite_start]Предоставляет **интерактивное окно diff** для утверждения изменений, что является критически важным элементом безопасности[cite: 679, 391]. Предотвращает случайную перезапись файлов. |
-| `touch`, `mkdir` | **`<write_to_file>`** | `write_to_file` автоматически создает файл и необходимые директории. [cite_start]Явное создание пустого файла или папки редко требуется[cite: 680]. |
-| `sed`, `awk` | **`<search_and_replace>`** или **`<apply_diff>`** | [cite_start]Предоставляют мощные и безопасные способы для поиска и замены, включая поддержку regex и интерактивное утверждение[cite: 542, 241]. |
-| `grep`, `rg` | **`<search_files>`** или **`<codebase_search>`** | [cite_start]`search_files` использует Ripgrep для быстрого поиска и предоставляет контекст[cite: 578, 583]. [cite_start]`codebase_search` выполняет семантический поиск по смыслу, а не только по ключевым словам[cite: 354, 355]. |
-| `mv`, `cp`, `rm` | **(Исключение) `execute_command`** | Для этих операций пока нет специализированных инструментов. Используй `execute_command`, но **обязательно** запроси подтверждение у пользователя через `<ask_followup_question>` перед удалением или перемещением файлов. |
+| `cat`, `head`, `tail`, `less`, `more` | **`<read_file>`** | [cite_start]Returns content with line numbers, supports partial reading of large files, and is safe[cite: 485, 487]. |
+| `ls`, `find`, `tree` | **`<list_files>`** | [cite_start]Works recursively, respects `.gitignore` and `.rooignore`, and intelligently formats output for a better understanding of the project structure[cite: 445, 450]. |
+| `echo "..." >`, `echo "..." >>` | **`<write_to_file>`** or **`<insert_content>`** | [cite_start]Provides an **interactive diff view** for approving changes, which is a critical security feature[cite: 679, 391]. Prevents accidental file overwrites. |
+| `touch`, `mkdir` | **`<write_to_file>`** | `write_to_file` automatically creates the file and necessary directories. [cite_start]Explicitly creating an empty file or folder is rarely needed[cite: 680]. |
+| `sed`, `awk` | **`<search_and_replace>`** or **`<apply_diff>`** | [cite_start]Provide powerful and safe methods for searching and replacing, including regex support and interactive approval[cite: 542, 241]. |
+| `grep`, `rg` | **`<search_files>`** or **`<codebase_search>`** | [cite_start]`search_files` uses Ripgrep for fast searching and provides context[cite: 578, 583]. [cite_start]`codebase_search` performs semantic searches by meaning, not just keywords[cite: 354, 355]. |
+| `mv`, `cp`, `rm` | **(Exception) `execute_command`** | There are no specialized tools for these operations yet. Use `execute_command`, but you **must** request confirmation from the user via `<ask_followup_question>` before deleting or moving files. |
 
-### 3. Когда Использование `execute_command` Оправдано
+### 3. When Using `execute_command` IS Justified
 
-Ты **должен** использовать `execute_command` для следующих типов задач:
+You **should** use `execute_command` for the following types of tasks:
 
-* [cite_start]**Запуск скриптов и процессов:** Установка зависимостей (`npm install`, `pip install`), запуск серверов разработки (`npm run dev`), сборка проекта (`npm run build`)[cite: 383, 384, 387].
-* **Работа с системами контроля версий:** `git status`, `git commit`, `git push`[cite: 385].
-* [cite_start]**Выполнение специфичных утилит:** Запуск тестов (`pytest`), линтеров (`eslint`) или других инструментов командной строки, для которых нет аналога в RooCode[cite: 388].
-* **Операции с файловой системой (с осторожностью):** Перемещение, копирование и удаление файлов, как указано в таблице выше.
+* [cite_start]**Running scripts and processes:** Installing dependencies (`npm install`, `pip install`), starting development servers (`npm run dev`), building the project (`npm run build`)[cite: 383, 384, 387].
+* [cite_start]**Working with version control systems:** `git status`, `git commit`, `git push`[cite: 385].
+* [cite_start]**Executing specific utilities:** Running tests (`pytest`), linters (`eslint`), or other command-line tools that do not have a RooCode equivalent[cite: 388].
+* **File system operations (with caution):** Moving, copying, and deleting files, as specified in the table above.
 
-### 4. Обоснование
+### 4. Rationale
 
-Этот протокол существует для повышения **надежности, безопасности и эффективности** твоей работы. Специализированные инструменты предоставляют структурированные данные, имеют встроенные механизмы защиты (например, утверждение через diff) и лучше интегрированы в среду RooCode.
+This protocol exists to increase the **reliability, security, and efficiency** of your work. Specialized tools provide structured data, have built-in safety mechanisms (like diff approval), and are better integrated into the RooCode environment.

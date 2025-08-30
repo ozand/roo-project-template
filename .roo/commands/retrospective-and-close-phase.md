@@ -2,33 +2,33 @@
 description: "Автоматически собрать итоговый отчет по завершенной фазе, а затем запустить процесс извлечения уроков."
 ---
 <task>
-    <name>Ретроспектива, Закрытие Фазы и Извлечение Уроков</name>
-    <objective>Автоматически собрать итоговый отчет по завершенной фазе, а затем запустить процесс извлечения уроков для анализа результатов и планирования следующей фазы.</objective>
-    <trigger>Все User Stories, относящиеся к определенной фазе, получают статус `[[DONE]]`.</trigger>
+    <name>Retrospective, Phase Closure, and Lessons Learned</name>
+    <objective>To automatically generate a summary report for a completed phase, and then initiate the process of extracting lessons for analyzing results and planning the next phase.</objective>
+    <trigger>All User Stories related to a specific phase are marked with the status `[[DONE]]`.</trigger>
     <context>
-        <knowledge_base>Все файлы `STORY-*.md` со свойством `phase:: [[Phase-X]]`.</knowledge_base>
+        <knowledge_base>All `STORY-*.md` files with the property `phase:: [[Phase-X]]`.</knowledge_base>
         <standard>[[rules.04-filename-referencing-rules]]</standard>
     </context>
     <workflow>
-        <step id="1" name="Сбор и анализ данных для ретроспективы">
-            <instruction>Делегировать задачу агенту `Project Research`.</instruction>
+        <step id="1" name="Data Collection and Analysis for Retrospective">
+            <instruction>Delegate the task to the `Project Research` agent.</instruction>
             <sub_task_prompt>
-"**Задача:** Подготовь отчет о завершении Фазы [[Phase-X]].
-1. Используя Datalog-запрос, найди все User Stories, относящиеся к этой фазе.
-2. Собери статистику: общее количество задач, распределение по категориям (API, UI, INFRA), распределение по приоритетам.
-3. Создай новую страницу `pages/reports.phase-[X]-summary.md` и заполни ее собранной статистикой и списком всех завершенных задач."
+"**Task:** Prepare a report on the completion of Phase [[Phase-X]].
+1. Using a Datalog query, find all User Stories related to this phase.
+2. Gather statistics: total number of tasks, distribution by category (API, UI, INFRA), and distribution by priority.
+3. Create a new page `pages/reports.phase-[X]-summary.md` and populate it with the collected statistics and a list of all completed tasks."
             </sub_task_prompt>
             <on_failure>
-                <instruction>Сообщить пользователю, что не удалось собрать отчет по ретроспективе. Предоставить лог ошибки от `Project Research`.</instruction>
+                <instruction>Inform the user that the retrospective report could not be generated. Provide the error log from `Project Research`.</instruction>
             </on_failure>
         </step>
-        <step id="2" name="Информирование о готовности отчета">
-            <instruction>Сообщить пользователю о готовности отчета по ретроспективе и о начале процесса извлечения уроков.</instruction>
+        <step id="2" name="Informing About Report Readiness">
+            <instruction>Inform the user that the retrospective report is ready and that the process of extracting lessons has begun.</instruction>
         </step>
-        <step id="3" name="Запуск извлечения уроков">
-            <instruction>Инициировать выполнение команды `[[commands.extract-phase-learnings]]`.</instruction>
+        <step id="3" name="Initiate Lesson Extraction">
+            <instruction>Initiate the execution of the `[[commands.extract-phase-learnings]]` command.</instruction>
             <on_failure>
-                <instruction>Сообщить пользователю, что не удалось запустить процесс извлечения уроков.</instruction>
+                <instruction>Inform the user that the lesson extraction process could not be started.</instruction>
             </on_failure>
         </step>
     </workflow>

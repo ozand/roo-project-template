@@ -2,39 +2,39 @@
 description: "Выявить и устранить расхождения между фактическим состоянием реализации в Git и документированным состоянием в базе знаний Logseq."
 ---
 <task>
-    <name>Аудит и Синхронизация Базы Знаний</name>
-    <objective>Выявить и устранить расхождения между фактическим состоянием реализации в Git и документированным состоянием в базе знаний Logseq.</objective>
-    <trigger>По расписанию (еженедельно) или по ручному запуску.</trigger>
+    <name>Knowledge Base Audit and Synchronization</name>
+    <objective>Identify and resolve discrepancies between the actual implementation state in Git and the documented state in the Logseq knowledge base.</objective>
+    <trigger>Scheduled (weekly) or manually triggered.</trigger>
     <context>
-        <knowledge_base>Все файлы `STORY-*.md` в директории `pages/`.</knowledge_base>
-        <source_of_truth_code>Логи Git-коммитов в текущей ветке.</source_of_truth_code>
+        <knowledge_base>All `STORY-*.md` files in the `pages/` directory.</knowledge_base>
+        <source_of_truth_code>Git commit logs in the current branch.</source_of_truth_code>
         <standard>[[rules.04-filename_referencing_rules]]</standard>
     </context>
     <workflow>
-        <step id="1" name="Анализ расхождений">
-            <instruction>Делегировать задачу агенту `Project Research`.</instruction>
+        <step id="1" name="Analyze Discrepancies">
+            <instruction>Delegate the task to the `Project Research` agent.</instruction>
             <sub_task_prompt>
-"**Задача:** Провести аудит. 
-1. Найди все User Stories со статусом `[[DONE]]`, для которых нет соответствующего коммита в Git (с ID истории в сообщении).
-2. Найди все User Stories со статусом `[[TODO]]` или `[[DOING]]`, для которых уже существует коммит о закрытии.
-3. Сформируй отчет о всех найденных расхождениях в моем `journal` за сегодня."
+"**Task:** Conduct an audit.
+1. Find all User Stories with the status `[[DONE]]` that do not have a corresponding Git commit (with the story ID in the message).
+2. Find all User Stories with the status `[[TODO]]` or `[[DOING]]` for which a closing commit already exists.
+3. Generate a report of all found discrepancies in my journal for today."
             </sub_task_prompt>
             <on_failure>
-                <instruction>Сообщить пользователю, что агент `Project Research` не смог провести аудит, и предоставить лог ошибки.</instruction>
+                <instruction>Inform the user that the `Project Research` agent failed to conduct the audit and provide the error log.</instruction>
             </on_failure>
         </step>
-        <step id="2" name="Запрос на исправление">
-            <instruction>На основе отчета от `Project Research`, запросить у пользователя подтверждение на исправление статусов в файлах `STORY-*.md`.</instruction>
+        <step id="2" name="Request for Correction">
+            <instruction>Based on the report from `Project Research`, request user confirmation to correct the statuses in the `STORY-*.md` files.</instruction>
             <tool_to_use>ask_followup_question</tool_to_use>
             <human_approval_gate>true</human_approval_gate>
         </step>
-        <step id="3" name="Исправление">
-            <instruction>После получения подтверждения, делегировать агенту `Code` задачу по исправлению статусов.</instruction>
+        <step id="3" name="Correction">
+            <instruction>After receiving confirmation, delegate the task of correcting the statuses to the `Code` agent.</instruction>
             <sub_task_prompt>
-"**Задача:** Внеси исправления в свойство `status` в следующих файлах User Story согласно отчету об аудите: [список файлов]."
+"**Task:** Correct the `status` property in the following User Story files according to the audit report: [list of files]."
             </sub_task_prompt>
             <on_failure>
-                <instruction>Сообщить пользователю, что агент `Code` не смог внести исправления в статусы, и предоставить лог ошибки. Порекомендовать проверить права на запись в файлы.</instruction>
+                <instruction>Inform the user that the `Code` agent failed to correct the statuses and provide the error log. Recommend checking file write permissions.</instruction>
             </on_failure>
         </step>
     </workflow>

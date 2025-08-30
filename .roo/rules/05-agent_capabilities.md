@@ -1,41 +1,41 @@
-# 5. Справочник по Возможностям AI-Агентов
+# 5. AI Agent Capabilities Handbook
 
-### 1. Философия
+### 1. Philosophy
 
-Этот документ является **единым источником правды** о ролях, возможностях и ограничениях каждого специализированного AI-агента в системе RooCode. Он служит справочником для `RooCode Project Strategist AI` и других агентов при принятии решений о делегировании задач. Информация здесь является краткой выжимкой из системных промптов (`roo_code_mode.md`).
+This document is the **single source of truth** regarding the roles, capabilities, and limitations of each specialized AI agent in the RooCode system. It serves as a reference for the `RooCode Project Strategist AI` and other agents when making decisions about task delegation. The information here is a concise summary from the system prompts (`roo_code_mode.md`).
 
 ---
 
-### 2. Список Агентов и их Функции
+### 2. List of Agents and Their Functions
 
 #### 🪃 Orchestrator
--   **Роль:** Стратегический координатор сложных задач, который делегирует работу другим специализированным агентам.
--   **Когда использовать:** Для комплексных, многошаговых проектов, требующих координации между несколькими специалистами. Идеален для разбиения больших задач на подзадачи и управления рабочим процессом.
+-   **Role:** A strategic coordinator for complex tasks who delegates work to other specialized agents.
+-   **When to use:** For complex, multi-step projects that require coordination between several specialists. Ideal for breaking down large tasks into subtasks and managing the workflow.
 
 #### 🏗️ Architect
--   **Роль:** Опытный технический лидер, занимающийся сбором информации и планированием. Его цель — создать детальный план (`implementation-plan`) перед началом реализации.
--   **Когда использовать:** Когда необходимо спроектировать, спланировать или разработать стратегию перед имплементацией. Идеален для разбиения сложных проблем и создания технических спецификаций.
+-   **Role:** An experienced technical leader focused on information gathering and planning. Their goal is to create a detailed implementation plan (`implementation-plan`) before development begins.
+-   **When to use:** When it is necessary to design, plan, or strategize before implementation. Ideal for breaking down complex problems and creating technical specifications.
 
 #### 💻 Code
--   **Роль:** Высококвалифицированный инженер-программист с обширными знаниями языков, фреймворков и лучших практик.
--   **Когда использовать:** Когда необходимо написать, изменить или отрефакторить код. Идеален для реализации фич, исправления багов и любых улучшений кода.
+-   **Role:** A highly skilled software engineer with extensive knowledge of languages, frameworks, and best practices.
+-   **When to use:** When it is necessary to write, modify, or refactor code. Ideal for implementing features, fixing bugs, and making any code improvements.
 
 #### 🪲 Debug
--   **Роль:** Эксперт по отладке программного обеспечения, специализирующийся на систематической диагностике и решении проблем.
--   **Когда использовать:** При поиске и устранении неисправностей, исследовании ошибок или диагностике проблем.
+-   **Role:** An expert in software debugging, specializing in systematic problem diagnosis and resolution.
+-   **When to use:** When troubleshooting issues, investigating errors, or diagnosing problems.
 
 #### ❓ Ask
--   **Роль:** Осведомленный технический ассистент, сфокусированный на ответах на вопросы и предоставлении информации.
--   **Когда использовать:** Когда нужны объяснения, документация или ответы на технические вопросы. Не вносит изменения в код.
+-   **Role:** A knowledgeable technical assistant focused on answering questions and providing information.
+-   **When to use:** When explanations, documentation, or answers to technical questions are needed. Does not make changes to the code.
 
 #### 🔍 Project Research
--   **Роль:** Детально-ориентированный ассистент-исследователь, специализирующийся на изучении кодовой базы, анализе структуры файлов, контента и зависимостей.
--   **Когда использовать:** Когда необходимо тщательно исследовать и понять структуру кодовой базы, проанализировать архитектуру или собрать полный контекст о существующих реализациях.
+-   **Role:** A detail-oriented research assistant specializing in examining the codebase, analyzing file structure, content, and dependencies.
+-   **When to use:** When it is necessary to thoroughly investigate and understand the codebase structure, analyze the architecture, or gather comprehensive context about existing implementations.
 
 #### 📝 User Story Creator
--   **Роль:** Специалист по agile-требованиям, сфокусированный на создании четких и ценных пользовательских историй (`User Story`).
--   **Когда использовать:** Когда необходимо создать User Stories, разбить требования на управляемые части или определить критерии приемки для фич.
+-   **Role:** An agile requirements specialist focused on creating clear and valuable user stories (`User Story`).
+-   **When to use:** When it is necessary to create User Stories, break down requirements into manageable parts, or define acceptance criteria for features.
 
 #### ✍️ Documentation Writer
--   **Роль:** Эксперт по технической документации, специализирующийся на создании понятной и всеобъемлющей документации для программных проектов.
--   **Когда использовать:** Когда необходимо создать, обновить или улучшить техническую документацию (README, API-документацию, гайды).
+-   **Role:** A technical documentation expert specializing in creating clear and comprehensive documentation for software projects.
+-   **When to use:** When it is necessary to create, update, or improve technical documentation (README, API documentation, guides).
