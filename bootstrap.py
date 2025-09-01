@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 
 # --- КОНФИГУРАЦИЯ ---
-TEMPLATE_DIRS_TO_COPY = [".roo", "scripts"]
+TEMPLATE_DIRS_TO_COPY = [".roo", "scripts", "pages"]
 MIGRATION_SOURCE_DIRS = ["docs/memory-bank", "docs/memory-bank/user_story"]
 
 def run_command(command, cwd):
