@@ -188,126 +188,28 @@ AI agents must perform the following checks before each Pull Request to prevent 
             log_warning(f"Requirement {req_id} is IMPLEMENTED but has incomplete stories: {incomplete_stories}")
     ```
 
-## 5. Automated Implementation Script
+## 5. Automated Implementation
 
-Create a dedicated script in `scripts/development/update_documentation_status.py` to automate this process:
+Use the dedicated script [[scripts/development/update_documentation_status.py|update_documentation_status.py]] to automate this process. The script implements the documentation maintenance protocol triggered by Git commits or direct task completion commands.
 
-```python
-#!/usr/bin/env python3
-"""
-Automated Documentation Status Update Script
+### Usage Examples
 
-This script implements the documentation maintenance protocol
-triggered by Git commits or direct task completion commands.
-"""
-
-import re
-import sys
-from pathlib import Path
-from typing import Dict, List, Optional, Set
-
-# Add project root to path
-project_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(project_root))
-
-from scripts.development.utils import log_info, log_error, log_warning
-
-class DocumentationUpdater:
-    def __init__(self, pages_dir: str = "pages"):
-        self.pages_dir = Path(pages_dir)
-        
-    def extract_task_id_from_commit(self, commit_message: str) -> Optional[str]:
-        """Extract task ID from commit message"""
-        pattern = r'Closes\s+(TASK-[A-Z0-9-]+)'
-        match = re.search(pattern, commit_message, re.IGNORECASE)
-        return match.group(1) if match else None
-    
-    def update_sprint_plan(self, task_id: str) -> bool:
-        """Update task status in sprint plan"""
-        sprint_file = self.pages_dir / "sprint-plan.md"
-        if not sprint_file.exists():
-            log_error(f"Sprint plan file not found: {sprint_file}")
-            return False
-            
-        content = sprint_file.read_text(encoding='utf-8')
-        
-        # Find and update task status
-        pattern = rf'(\|\s*{re.escape(task_id)}\s*\|.*?\|\s*)(In Progress|TODO)(\s*\|)'
-        replacement = r'\1Done\3'
-        
-        if not re.search(pattern, content):
-            log_warning(f"Task {task_id} not found or already Done")
-            return False
-            
-        updated_content = re.sub(pattern, replacement, content)
-        sprint_file.write_text(updated_content, encoding='utf-8')
-        log_info(f"Updated task {task_id} status to Done")
-        return True
-    
-    def run_consistency_checks(self) -> bool:
-        """Run all consistency checks"""
-        checks_passed = True
-        
-        try:
-            # Implement all consistency checks from section 4
-            checks_passed &= self.check_backlog_requirements_integrity()
-            checks_passed &= self.check_roadmap_backlog_integrity()
-            checks_passed &= self.check_sprint_backlog_integrity()
-            self.check_status_consistency()  # This only warns
-            
-        except Exception as e:
-            log_error(f"Consistency check failed: {e}")
-            checks_passed = False
-            
-        return checks_passed
-
-def main():
-    """Main entry point"""
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="Update documentation status")
-    parser.add_argument("--commit-message", help="Git commit message")
-    parser.add_argument("--task-id", help="Direct task ID to update")
-    parser.add_argument("--check-only", action="store_true", help="Only run consistency checks")
-    
-    args = parser.parse_args()
-    
-    updater = DocumentationUpdater()
-    
-    if args.check_only:
-        success = updater.run_consistency_checks()
-        sys.exit(0 if success else 1)
-    
-    # Determine task ID from commit message or direct input
-    task_id = None
-    if args.commit_message:
-        task_id = updater.extract_task_id_from_commit(args.commit_message)
-        if not task_id:
-            log_error("No task ID found in commit message")
-            sys.exit(1)
-    elif args.task_id:
-        task_id = args.task_id
-    else:
-        log_error("Either --commit-message or --task-id must be provided")
-        sys.exit(1)
-    
-    # Execute update protocol
-    success = updater.update_sprint_plan(task_id)
-    if success:
-        # Continue with steps 2 and 3...
-        updater.update_backlog_from_task(task_id)
-        updater.update_requirements_from_story(task_id)
-        
-        # Run consistency checks
-        updater.run_consistency_checks()
-    
-    sys.exit(0 if success else 1)
-
-if __name__ == "__main__":
-    main()
+**Update from commit message:**
+```bash
+uv run python scripts/development/update_documentation_status.py --commit-message "feat: Add search filters (Closes TASK-S1-1)"
 ```
 
-## 6. Integration with Git Hooks
+**Update specific task:**
+```bash
+uv run python scripts/development/update_documentation_status.py --task-id TASK-S1-1
+```
+
+**Run consistency checks only:**
+```bash
+uv run python scripts/development/update_documentation_status.py --check-only
+```
+
+### Git Hook Integration
 
 Add a pre-commit hook to automatically run consistency checks:
 

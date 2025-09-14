@@ -167,7 +167,7 @@ For automatic visualization of tasks on a Kanban board (using the Kanban plugin)
 
 ### 7. AI Agent Work Protocols
 
-**Critical Rule:** Before executing any task, you are **obligated** to review and strictly follow the document **[[rules.06-tool-usage-protocol]]**. Violation of this protocol, especially the improper use of `execute_command`, is considered a serious error.
+**Critical Rule:** Before executing any task, you are **obligated** to review and strictly follow the document **[[rules.06-tool_usage_protocol]]**. Violation of this protocol, especially the improper use of `execute_command`, is considered a serious error.
 
 #### 7.1. Work Algorithm (Task Lifecycle)
 
