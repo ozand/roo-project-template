@@ -1,6 +1,0 @@
-type:: [[story]]
-status:: [[TODO]]
-priority:: [[high]]
-assignee:: [[@Code]]
-epic:: [[EPIC-TEST]]
-related-reqs:: [[REQ-TEST-1]]
