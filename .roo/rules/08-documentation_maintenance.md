@@ -188,6 +188,16 @@ AI agents must perform the following checks before each Pull Request to prevent 
             log_warning(f"Requirement {req_id} is IMPLEMENTED but has incomplete stories: {incomplete_stories}")
     ```
 
+5.  **Assignee Role Validation:**
+    * **Rule:** The `assignee` property in User Stories must contain a valid AI agent role from the approved list in `.roo/rules/05-agent_capabilities.md`.
+    * **Action on violation:** Error indicating the invalid assignee and listing the valid agent roles.
+    * **RooCode Validation:**
+    ```python
+    # Validate assignee roles
+    # The validation script extracts valid roles from .roo/rules/05-agent_capabilities.md
+    # and checks that assignee values in User Stories match these roles.
+    ```
+
 ## 5. Automated Implementation
 
 Use the dedicated script [[scripts/development/update_documentation_status.py|update_documentation_status.py]] to automate this process. The script implements the documentation maintenance protocol triggered by Git commits or direct task completion commands.

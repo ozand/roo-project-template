@@ -98,6 +98,7 @@ class KBValidator:
         self.terminal_errors: List[str] = []
         self.external_errors: List[str] = []
         self.filtered_links: List[str] = []  # Новый список для отфильтрованных ссылок
+        self.valid_agent_roles = self._extract_valid_agent_roles()  # Извлекаем допустимые роли агентов
         # Регулярное выражение для поиска всех ссылок [[...]]
         self.link_pattern = re.compile(r"\[\[([^\]]+)\]\]")
         # Регулярные выражения для проверки имен файлов
@@ -223,6 +224,31 @@ class KBValidator:
         content_without_code = re.sub(inline_pattern, "", content_without_fenced)
         
         return content_without_code
+
+    def _extract_valid_agent_roles(self) -> List[str]:
+        """Извлекает допустимые роли агентов из документа возможностей агентов."""
+        valid_roles = []
+        agent_capabilities_path = self.base_path / ".roo/rules/05-agent_capabilities.md"
+        
+        if not agent_capabilities_path.exists():
+            self._add_warning(f"Файл возможностей агентов не найден: {agent_capabilities_path}")
+            return valid_roles
+        
+        try:
+            content = agent_capabilities_path.read_text(encoding="utf-8")
+            # Ищем заголовки агентов в формате #### Иконка ИмяАгента
+            agent_header_pattern = re.compile(r"^####\s+[^\s]+\s+(.+)$", re.MULTILINE)
+            matches = agent_header_pattern.findall(content)
+            
+            for match in matches:
+                # Очищаем имя агента от лишних символов
+                role_name = match.strip()
+                valid_roles.append(role_name)
+                
+        except Exception as e:
+            self._add_warning(f"Не удалось извлечь роли агентов из {agent_capabilities_path}: {e}")
+        
+        return valid_roles
 
     def _find_markdown_files(self) -> List[Path]:
         """Находит все .md файлы, рекурсивно сканируя директории из KNOWLEDGE_BASE_DIRS."""
@@ -445,6 +471,43 @@ class KBValidator:
         except Exception as e:
             self._add_warning(f"Could not validate status correctness for '{md_file}': {e}")
 
+    def validate_assignee_correctness(self, md_file: Path):
+        """Проверяет, что значения свойства assignee соответствуют разрешенному списку."""
+        try:
+            relative_path = md_file.relative_to(self.base_path).as_posix()
+            filename = Path(relative_path).name
+            
+            # Проверяем только файлы в директории pages
+            if not relative_path.startswith("pages/"):
+                return
+            
+            content = md_file.read_text(encoding="utf-8")
+            
+            # Проверка User Stories
+            if filename.startswith("STORY-"):
+                # Найдем строку с assignee
+                assignee_line = None
+                for line in content.split('\n'):
+                    if line.startswith("assignee::"):
+                        assignee_line = line
+                        break
+                
+                if assignee_line:
+                    # Проверяем, что assignee соответствует разрешенному списку
+                    # Извлекаем значение из ссылки вида `[[@Agent Name]]`
+                    assignee_match = re.search(r"`\[\[@(.+?)\]\]`", assignee_line)
+                    if assignee_match:
+                        assignee_value = assignee_match.group(1)
+                        # Проверяем, что роль агента в списке допустимых
+                        if assignee_value not in self.valid_agent_roles:
+                            self._add_error(f"User Story '{relative_path}' имеет недопустимого assignee: '{assignee_value}'. Допустимые значения: {', '.join(self.valid_agent_roles)}", md_file)
+                    else:
+                        # Если не удалось извлечь значение assignee
+                        self._add_error(f"User Story '{relative_path}' имеет неправильный формат assignee. Ожидается формат: assignee:: `[[@Agent Name]]`", md_file)
+
+        except Exception as e:
+            self._add_warning(f"Could not validate assignee correctness for '{md_file}': {e}")
+
     def validate_readme_title(self, md_file: Path):
         """Проверяет, что все README.md файлы имеют свойство title::."""
         try:
@@ -552,6 +615,10 @@ class KBValidator:
         print("Запуск валидации правильности статусов...")
         for md_file in all_md_files:
             self.validate_status_correctness(md_file)
+        
+        print("Запуск валидации правильности assignee...")
+        for md_file in all_md_files:
+            self.validate_assignee_correctness(md_file)
         
         print("Запуск валидации заголовков в README...")
         for md_file in all_md_files:
