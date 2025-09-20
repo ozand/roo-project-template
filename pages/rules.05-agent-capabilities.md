@@ -1,0 +1,1 @@
+T:/Code/python/template/roo-project-template/.roo/rules/05-agent_capabilities.md
