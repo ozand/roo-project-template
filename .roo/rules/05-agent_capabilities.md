@@ -13,12 +13,25 @@ This document is the **single source of truth** regarding the roles, capabilitie
 -   **When to use:** For complex, multi-step projects that require coordination between several specialists. Ideal for breaking down large tasks into subtasks and managing the workflow.
 
 #### 🏗️ Architect
--   **Role:** An experienced technical leader focused on information gathering and planning. Their goal is to create a detailed implementation plan (`implementation-plan`) before development begins.
+-   **Role:** An experienced technical leader focused on information gathering and planning. Their goal is to create detailed implementation specifications (`implementation-spec`) before development begins.
 -   **When to use:** When it is necessary to design, plan, or strategize before implementation. Ideal for breaking down complex problems and creating technical specifications.
+-   **Spec-Driven Responsibilities:**
+    -   **REQUIRED:** Create detailed implementation specifications for complex User Stories
+    -   **REQUIRED:** Use template `[[templates.implementation-spec]]` for all specifications  
+    -   **REQUIRED:** Follow naming convention: `specs.STORY-[CATEGORY]-[ID].md`
+    -   **REQUIRED:** Set specification status progression: `[[DRAFT]]` → `[[APPROVED]]` → `[[COMPLETED]]`
+    -   **REQUIRED:** Add specification reference to User Story: `spec:: [[specs.STORY-CATEGORY-ID]]`
+    -   **RECOMMENDED:** Set `review-required:: [[true]]` for complex specifications
 
 #### 💻 Code
--   **Role:** A highly skilled software engineer with extensive knowledge of languages, frameworks, and best practices.
+-   **Role:** A highly skilled software engineer with extensive knowledge of languages, frameworks, and best practices. **Must strictly follow implementation specifications when they exist.**
 -   **When to use:** When it is necessary to write, modify, or refactor code. Ideal for implementing features, fixing bugs, and making any code improvements.
+-   **Spec-Driven Requirements:**
+    -   **MANDATORY:** Before starting any User Story implementation, must check if `spec::` property exists
+    -   **MANDATORY:** If specification exists, must verify it has `status:: [[APPROVED]]` 
+    -   **MANDATORY:** Must read and follow the implementation specification exactly as written
+    -   **FORBIDDEN:** Starting implementation when specification status is `[[DRAFT]]`
+    -   **REQUIRED:** Update specification status to `[[COMPLETED]]` upon successful implementation
 
 #### 🪲 Debug
 -   **Role:** An expert in software debugging, specializing in systematic problem diagnosis and resolution.

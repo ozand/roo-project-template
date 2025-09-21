@@ -1,1 +1,0 @@
-T:/Code/python/template/roo-project-template/.roo/rules/02-scripts_structure.md

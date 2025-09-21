@@ -1,1 +1,0 @@
-T:/Code/python/template/roo-project-template/.roo/rules/03-e2e_tests_guidline.md

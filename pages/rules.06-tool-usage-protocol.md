@@ -1,1 +1,0 @@
-T:/Code/python/template/roo-project-template/.roo/rules/06-tool_usage_protocol.md

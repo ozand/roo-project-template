@@ -62,7 +62,7 @@ IGNORED_LINKS = {
     "high", "medium", "low",
     
     # Типы документов
-    "story", "requirement", "implementation-plan", "learning",
+    "story", "requirement", "implementation-plan", "learning", "implementation-spec",
     
     # Концептуальные категории из схем свойств
     "epic", "positive", "negative", "technical", "process", "communication",
@@ -104,6 +104,7 @@ class KBValidator:
         # Регулярные выражения для проверки имен файлов
         self.story_pattern = re.compile(r"^STORY-[A-Z]+-\d+\.md$")
         self.req_pattern = re.compile(r"^REQ-[A-Z]+-\d+\.md$")
+        self.spec_pattern = re.compile(r"^specs\.STORY-[A-Z]+-\d+\.md$")
         self.rule_pattern = re.compile(r"^\.roo/rules/[^/]+\.md$")
         # Регулярное выражение для поиска ссылок с алиасами
         self.alias_link_pattern = re.compile(r"\[\[([^\]|]+)\|`([^`]+)`\]\]")
@@ -363,6 +364,13 @@ class KBValidator:
                     if not self.req_pattern.match(filename):
                         self._add_error(f"Неправильное имя файла Requirement: '{relative_path}'. Должно быть в формате REQ-[CATEGORY]-[ID].md", md_file)
             
+            # Проверка Implementation Specifications
+            if relative_path.startswith("pages/") and relative_path.endswith(".md"):
+                filename = Path(relative_path).name
+                if filename.startswith("specs."):
+                    if not self.spec_pattern.match(filename):
+                        self._add_error(f"Неправильное имя файла Implementation Specification: '{relative_path}'. Должно быть в формате specs.STORY-[CATEGORY]-[ID].md", md_file)
+            
             # Проверка Rules (для файлов в .roo/rules/)
             if relative_path.startswith(".roo/rules/") and relative_path.endswith(".md"):
                 # Проверка, что файлы правил находятся непосредственно в .roo/rules/, а не в поддиректориях
@@ -420,6 +428,24 @@ class KBValidator:
                 
                 if missing_properties:
                     self._add_error(f"Requirement '{relative_path}' отсутствуют обязательные свойства: {', '.join(missing_properties)}", md_file)
+            
+            # Проверка Implementation Specifications
+            elif filename.startswith("specs."):
+                # Проверяем наличие всех обязательных свойств Implementation Specification
+                required_properties = [
+                    "type:: [[implementation-spec]]",
+                    "related-story::",
+                    "status::",
+                    "architect::"
+                ]
+                
+                missing_properties = []
+                for prop in required_properties:
+                    if prop not in content:
+                        missing_properties.append(prop)
+                
+                if missing_properties:
+                    self._add_error(f"Implementation Specification '{relative_path}' отсутствуют обязательные свойства: {', '.join(missing_properties)}", md_file)
 
         except Exception as e:
             self._add_warning(f"Could not validate properties schema for '{md_file}': {e}")
@@ -467,6 +493,22 @@ class KBValidator:
                     status_value = status_line.split("status::", 1)[1].strip()
                     if status_value not in allowed_statuses:
                         self._add_error(f"Requirement '{relative_path}' имеет недопустимый статус: '{status_value}'. Допустимые значения: {', '.join(allowed_statuses)}", md_file)
+            
+            # Проверка Implementation Specifications
+            elif filename.startswith("specs."):
+                # Найдем строку со статусом
+                status_line = None
+                for line in content.split('\n'):
+                    if line.startswith("status::"):
+                        status_line = line
+                        break
+                
+                if status_line:
+                    # Проверяем, что статус соответствует разрешенному списку
+                    allowed_statuses = ["[[DRAFT]]", "[[APPROVED]]", "[[COMPLETED]]"]
+                    status_value = status_line.split("status::", 1)[1].strip()
+                    if status_value not in allowed_statuses:
+                        self._add_error(f"Implementation Specification '{relative_path}' имеет недопустимый статус: '{status_value}'. Допустимые значения: {', '.join(allowed_statuses)}", md_file)
 
         except Exception as e:
             self._add_warning(f"Could not validate status correctness for '{md_file}': {e}")

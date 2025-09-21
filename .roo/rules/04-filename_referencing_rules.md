@@ -86,6 +86,7 @@ priority:: One of the following values: `[[high]]`, `[[medium]]`, `[[low]]`
 assignee:: Link to the assignee: `[[@username]]`
 epic:: Link to the epic: `[[EPIC-NAME]]`
 related-reqs:: A comma-separated list of links to requirements: `[[REQ-ID-1]], [[REQ-ID-2]]`
+spec:: Link to the implementation specification: `[[specs.STORY-CATEGORY-ID]]` (required for complex stories)
 ```
 
 #### 5.2. Properties Schema for a Requirement
@@ -123,6 +124,30 @@ This artifact is created at the end of a phase to document key lessons learned. 
     related-stories:: [[STORY-API-5]], [[STORY-UI-12]]
     category:: [[technical]], [[process]], or [[communication]]
     ```
+
+#### 5.5. Properties Schema for an Implementation Specification
+
+This artifact is created by the `Architect` agent before implementation begins. It provides a detailed technical specification that the `Code` agent must follow strictly. This is part of the **spec-driven workflow** where formal specifications precede implementation.
+
+  * **Location:** `pages/`
+  * **Filename Format:** `specs.STORY-[CATEGORY]-[ID].md` 
+  * **Logseq Page Name:** `[[specs.STORY-CATEGORY-ID]]`
+  * **Properties Schema:**
+    ```markdown
+    type:: [[implementation-spec]]
+    related-story:: [[STORY-API-1]]
+    status:: [[DRAFT]] | [[APPROVED]] | [[COMPLETED]]
+    architect:: [[@username]]
+    created-date:: [[YYYY-MM-DD]]
+    review-required:: [[true]] | [[false]]
+    complexity:: [[low]] | [[medium]] | [[high]]
+    ```
+
+  * **Workflow Integration:**
+    - The `Architect` agent creates this specification as part of story decomposition
+    - Status must be `[[APPROVED]]` before the `Code` agent begins implementation
+    - The related User Story must reference this spec via `spec:: [[specs.STORY-CATEGORY-ID]]`
+    - Upon completion, status changes to `[[COMPLETED]]`
 
 -----
 
@@ -169,9 +194,9 @@ For automatic visualization of tasks on a Kanban board (using the Kanban plugin)
 
 **Critical Rule:** Before executing any task, you are **obligated** to review and strictly follow the document **[[rules.06-tool-usage-protocol]]**. Violation of this protocol, especially the improper use of `execute_command`, is considered a serious error.
 
-#### 7.1. Work Algorithm (Task Lifecycle)
+#### 7.1. Work Algorithm (Task Lifecycle) - Spec-Driven Workflow
 
-AI agents are required to follow this algorithm when working on new phases or tasks.
+AI agents are required to follow this algorithm when working on new phases or tasks. This implements the **spec-driven workflow** with formal specifications.
 
 **Phase 1: Analysis and Decomposition**
 
@@ -182,20 +207,38 @@ AI agents are required to follow this algorithm when working on new phases or ta
       * Inside the file, describe the User Story and Acceptance Criteria in detail.
 3.  **Output:** A set of new, atomic User Story pages in the `pages/` folder.
 
-**Phase 2: Implementation**
+**Phase 2: Architectural Design (NEW - for complex stories)**
+
+1.  **Input:** A User Story with status `[[TODO]]` that requires a detailed specification.
+2.  **Action (Architect Agent only):**
+      * Create implementation specification using template `[[templates.implementation-spec]]`
+      * Save as `pages/specs.STORY-[CATEGORY]-[ID].md`
+      * Set initial status to `status:: [[DRAFT]]`
+      * Add reference in the User Story: `spec:: [[specs.STORY-CATEGORY-ID]]`
+      * Perform architectural analysis and design
+      * Update specification status to `status:: [[APPROVED]]` when ready
+3.  **Output:** An approved implementation specification ready for development.
+
+**Phase 3: Implementation**
 
 1.  **Input:** Pick up one User Story with the status `[[TODO]]`.
-2.  **Action:**
+2.  **Prerequisite Check (Code Agent):**
+      * **MANDATORY:** If User Story has `spec::` property, verify the linked specification has `status:: [[APPROVED]]`
+      * **STOP EXECUTION** if specification is not approved
+      * Read and understand the complete specification before proceeding
+3.  **Action:**
       * **Immediately** update the status in the `STORY-*.md` file to `status:: [[DOING]]`.
+      * Follow the implementation specification strictly (if exists)
       * Proceed with implementing the code and tests.
       * Git commits **must** include the story ID (e.g., `feat: Implement search filters (STORY-API-1)`).
-3.  **Output:** Completed code that corresponds to the User Story.
+4.  **Output:** Completed code that corresponds to the User Story and specification.
 
-**Phase 3: Completion**
+**Phase 4: Completion**
 
 1.  **Input:** A completed and tested implementation.
 2.  **Action:**
       * **Immediately** update the status in the `STORY-*.md` file to `status:: [[DONE]]`.
+      * If specification exists, update its status to `status:: [[COMPLETED]]`
       * Check if the implementation requires updating other documentation and make the necessary changes.
       * **Create a journal entry** for the current day according to the format specified in rule `7.5. Journaling on Task Completion`.
 3.  **Output:** An updated knowledge base and a new entry in the daily journal. The dashboards on `[[Project Hub.md]]` will update automatically.

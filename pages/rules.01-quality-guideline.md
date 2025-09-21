@@ -1,1 +1,0 @@
-T:/Code/python/template/roo-project-template/.roo/rules/01-quality_guideline.md

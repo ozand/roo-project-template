@@ -1,1 +1,0 @@
-T:/Code/python/template/roo-project-template/.roo/commands/audit-and-sync-kb.md
